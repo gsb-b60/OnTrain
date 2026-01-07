@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/feature/login/register_screen.dart';
 import 'package:ontrain/main.dart';
 
 class LogInScreen extends StatelessWidget {
