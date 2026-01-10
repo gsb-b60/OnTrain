@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/feature/book/home.dart';
+import 'package:ontrain/feature/book/homepage.dart';
 import 'package:ontrain/feature/login/register_screen.dart';
 import 'package:ontrain/main.dart';
 
@@ -108,6 +110,12 @@ class LogInScreen extends StatelessWidget {
                 Column(
                   children: [
                     GestureDetector(
+                      onTap: () =>  Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScaff(),
+                            ),
+                          ),
                       child: Container(
                         margin: EdgeInsets.symmetric(
                           vertical: 30.0,

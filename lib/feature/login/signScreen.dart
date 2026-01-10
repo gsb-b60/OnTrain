@@ -3,6 +3,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/feature/book/home.dart';
+import 'package:ontrain/feature/book/homepage.dart';
 import 'package:ontrain/feature/login/login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -93,7 +95,7 @@ class SignupScreenState extends State<SignupScreen> {
                       decoration: InputDecoration(
                         fillColor: AppColors.greyAqua,
                         filled: true,
-            
+
                         contentPadding: EdgeInsets.all(7),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -116,7 +118,7 @@ class SignupScreenState extends State<SignupScreen> {
                       decoration: InputDecoration(
                         fillColor: AppColors.greyAqua,
                         filled: true,
-            
+
                         contentPadding: EdgeInsets.all(7),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -135,12 +137,12 @@ class SignupScreenState extends State<SignupScreen> {
                         height: 2.5,
                       ),
                     ),
-            
+
                     TextField(
                       decoration: InputDecoration(
                         fillColor: AppColors.greyAqua,
                         filled: true,
-            
+
                         contentPadding: EdgeInsets.all(7),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -163,7 +165,7 @@ class SignupScreenState extends State<SignupScreen> {
                       decoration: InputDecoration(
                         fillColor: AppColors.greyAqua,
                         filled: true,
-            
+
                         contentPadding: EdgeInsets.all(7),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -182,7 +184,7 @@ class SignupScreenState extends State<SignupScreen> {
                         height: 2.5,
                       ),
                     ),
-            
+
                     GestureDetector(
                       onTap: () {
                         showCupertinoModalPopup<void>(
@@ -231,7 +233,9 @@ class SignupScreenState extends State<SignupScreen> {
                         ),
                         SizedBox(width: 20),
                         DropdownButton<String>(
-                          items: <String>['User', 'Trainer'].map((String value) {
+                          items: <String>['User', 'Trainer'].map((
+                            String value,
+                          ) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -246,7 +250,7 @@ class SignupScreenState extends State<SignupScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 30,),
+                    SizedBox(height: 30),
                     Column(
                       children: [
                         Text("By continuing, you agree to"),
@@ -266,21 +270,33 @@ class SignupScreenState extends State<SignupScreen> {
                             ],
                           ),
                         ),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: AppGradients.focus,
-                            borderRadius: BorderRadius.circular(24),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => HomeScaff(),
+                            ),
                           ),
-                          height: 50,
-                          width: double.infinity,
-                          margin: EdgeInsets.symmetric(horizontal: 55, vertical: 20),
-                          child: Center(
-                            child: Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                fontSize: AppSizes.medium,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.light,
+
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: AppGradients.focus,
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            height: 50,
+                            width: double.infinity,
+                            margin: EdgeInsets.symmetric(
+                              horizontal: 55,
+                              vertical: 20,
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Sign Up",
+                                style: TextStyle(
+                                  fontSize: AppSizes.medium,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.light,
+                                ),
                               ),
                             ),
                           ),

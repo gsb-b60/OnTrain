@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/feature/book/cancelsess.dart';
+import 'package:ontrain/feature/book/sessionpage.dart';
+import 'package:ontrain/main.dart';
 
 class YourSessionPage extends StatelessWidget {
   const YourSessionPage({
@@ -40,7 +43,9 @@ class YourSessionPage extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
                               icon: Icon(
                                 Icons.arrow_back_ios,
                                 color: AppColors.light,
@@ -208,7 +213,9 @@ class YourSessionPage extends StatelessWidget {
                               ),
                             ),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>CancelAppoint()));
+                              },
                               icon: Icon(
                                 Icons.cancel_rounded,
                                 size: 32,
@@ -334,6 +341,7 @@ class YourSessionPage extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
+                    onTap: () => Navigator.pop(context),
                     child: Container(
                       height: 38,
                       width: 140,
