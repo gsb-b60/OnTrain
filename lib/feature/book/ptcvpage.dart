@@ -23,7 +23,9 @@ class PTCVPage extends StatelessWidget {
                         Row(
                           children: [
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
                               icon: Icon(
                                 Icons.arrow_back_ios,
                                 color: AppColors.light,

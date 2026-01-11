@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/feature/book/ptlistpage.dart';
+import 'package:ontrain/feature/book/yoursessionpage.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 
@@ -425,18 +426,21 @@ class _TableCalendarExState extends State<TableCalendarEx> {
                       selectedSessions.sort(
                         (a, b) => a.startTime.compareTo(b.startTime),
                       );
-                      return ListTile(
-                        leading: Icon(
-                          Icons.check_box_outline_blank_outlined,
-                          color: AppColors.aquaTeal,
-                        ),
-                        title: Text(
-                          "${DateFormat('H:mm').format(selectedSessions[index].startTime)} - ${DateFormat('H:mm').format(selectedSessions[index].endTime)}  ${DateFormat('dd-MM-yyyy').format(selectedSessions[index].endTime)}",
-                        ),
-                        subtitle: Text(selectedSessions[index].notes),
-                        trailing: Icon(
-                          Icons.star_outline,
-                          color: AppColors.aquaTeal,
+                      return GestureDetector(
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>YourSessionPage())),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.check_box_outline_blank_outlined,
+                            color: AppColors.aquaTeal,
+                          ),
+                          title: Text(
+                            "${DateFormat('H:mm').format(selectedSessions[index].startTime)} - ${DateFormat('H:mm').format(selectedSessions[index].endTime)}  ${DateFormat('dd-MM-yyyy').format(selectedSessions[index].endTime)}",
+                          ),
+                          subtitle: Text(selectedSessions[index].notes),
+                          trailing: Icon(
+                            Icons.star_outline,
+                            color: AppColors.aquaTeal,
+                          ),
                         ),
                       );
                     },
