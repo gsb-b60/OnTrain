@@ -5,7 +5,26 @@ import 'package:ontrain/core/constrants/app_size.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/feature/book/cancelsess.dart';
 import 'package:ontrain/feature/book/review.dart';
+import 'package:ontrain/feature/book/sessiondisplay/sessiondisplaynoti.dart';
 import 'package:ontrain/feature/book/yoursessionpage.dart';
+
+
+
+// class SessionpageLanding extends StatefulWidget {
+//   const SessionpageLanding({super.key});
+
+//   @override
+//   State<SessionpageLanding> createState() => _SessionpageLandingState();
+// }
+
+// class _SessionpageLandingState extends State<SessionpageLanding> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return ChangeNotifierProvider(
+//       create:(context)=>SessionDisplayNoti(),
+//       child: SessionPage());
+//   }
+// }
 
 class SessionPage extends StatefulWidget {
   const SessionPage({super.key});

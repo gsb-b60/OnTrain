@@ -8,6 +8,7 @@ class PT {
   final String address;
   final DateTime createdAt;
   final PTState state;
+
   PT({
     required this.name,
     required this.Pnum,
@@ -16,6 +17,21 @@ class PT {
     required this.createdAt,
     required this.id,
     required this.state,
+  });
+}
+class PTSpecialties{
+  final int id;
+  final int PTID;
+  final String title;
+  final String Notes;
+  final PT? pt;
+
+  PTSpecialties({
+    required this.id,
+    required this.PTID,
+    required this.title,
+    required this.Notes,
+    this.pt,
   });
 }
 
@@ -36,6 +52,8 @@ class PTContranst {
   });
 }
 
+enum SessionState { booked, completed, canceled }
+
 class PTSession {
   final int id;
   final int ptContranstId;
@@ -45,7 +63,11 @@ class PTSession {
   final String notes;
   final DateTime createdAt;
   final int rate = 0;
-  final int order=0;
+  final int order = 0;
+  SessionState state = SessionState.booked;
+  final PT? pt;
+  final User? user;
+
   PTSession({
     required this.id,
     required this.ptContranstId,
@@ -54,6 +76,8 @@ class PTSession {
     required this.createdAt,
     required this.startTime,
     required this.endTime,
+    this.pt,
+    this.user,
   });
 }
 
@@ -63,12 +87,16 @@ class PTReview {
   final int rating;
   final String comment;
   final DateTime createdAt;
+  final PT? pt;
+  final PTContranst? con; 
   PTReview({
     required this.id,
     required this.ptSessionId,
     required this.rating,
     required this.comment,
     required this.createdAt,
+    this.pt,
+    this.con,
   });
 }
 
@@ -86,3 +114,8 @@ class User {
     required this.createdAt,
   });
 }
+
+// class PTReview{
+//   final int id;
+//   final int 
+// }

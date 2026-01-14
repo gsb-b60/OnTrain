@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/feature/book/booking.dart';
 
 class PTCVPage extends StatelessWidget {
   const PTCVPage({super.key});
@@ -315,6 +316,7 @@ class PTCVPage extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: GestureDetector(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>Booking())),
               child: Container(
                 margin: EdgeInsets.all(12),
                 padding: EdgeInsets.all(12),

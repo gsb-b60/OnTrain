@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
-import 'package:ontrain/feature/book/ptlistpage.dart';
+import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
 import 'package:ontrain/feature/book/yoursessionpage.dart';
+import 'package:ontrain/feature/profile/profilepage.dart';
 import 'package:table_calendar/table_calendar.dart';
-
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -51,7 +51,6 @@ class HomePage extends StatelessWidget {
       ),
     ];
     return Scaffold(
-      
       body: Column(
         children: [
           Padding(
@@ -94,6 +93,12 @@ class HomePage extends StatelessWidget {
                           ),
                           Spacer(),
                           GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfilePage(),
+                              ),
+                            ),
                             child: CircleAvatar(
                               backgroundImage: AssetImage(
                                 "assets/PXL_20251014_011048644~2.jpg",
@@ -115,114 +120,119 @@ class HomePage extends StatelessWidget {
                         fontSize: 16,
                       ),
                     ),
-                    Spacer(),
-                    Text(
-                      "See All",
-                      style: TextStyle(
-                        color: AppColors.aquaTeal,
-                        fontSize: 16,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppColors.aquaTeal,
-                      ),
-                    ),
                   ],
                 ),
                 Divider(thickness: 1),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    GestureDetector(
-                      onTap: () => {},
-                      child: Container(
-                        child: Column(
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.favorite_border),
-                              color: AppColors.aquaTeal,
-                            ),
-                            Text(
-                              "Favorite",
-                              style: TextStyle(color: AppColors.aquaTeal),
-                            ),
-                          ],
-                        ),
-                      ),
+                    CateBtn(
+                      title: "Favorite",
+                      ico: Icons.favorite,
+                      onCall: () {},
                     ),
-                    GestureDetector(
-                      onTap: () => {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>PTListpage(pts: pts)))
+                    CateBtn(
+                      title: "PT",
+                      ico: Icons.person,
+                      onCall: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PTListpage(pts: pts),
+                          ),
+                        );
                       },
-                      child: Container(
-                        child: Column(
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.person),
-                              color: AppColors.aquaTeal,
-                            ),
-                            Text(
-                              "PT",
-                              style: TextStyle(color: AppColors.aquaTeal),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
-                    GestureDetector(
-                      onTap: () => {},
-                      child: Container(
-                        child: Column(
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              color: AppColors.aquaTeal,
-                              icon: Icon(Icons.map),
-                            ),
-                            Text(
-                              "GYM",
-                              style: TextStyle(color: AppColors.aquaTeal),
-                            ),
-                          ],
-                        ),
-                      ),
+                    CateBtn(title: "GYM", ico: Icons.map, onCall: () {}),
+                    CateBtn(
+                      title: "Specialties",
+                      ico: Icons.school,
+                      onCall: () {},
                     ),
-                    GestureDetector(
-                      onTap: () => {},
-                      child: Container(
-                        child: Column(
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              color: AppColors.aquaTeal,
-                              icon: Icon(Icons.school),
-                            ),
-                            Text(
-                              "Specialties",
-                              style: TextStyle(color: AppColors.aquaTeal),
-                            ),
-                          ],
-                        ),
-                      ),
+                    CateBtn(
+                      title: "Records",
+                      ico: Icons.receipt_long,
+                      onCall: () {},
                     ),
-                    GestureDetector(
-                      onTap: () => {},
-                      child: Container(
-                        child: Column(
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              color: AppColors.aquaTeal,
-                              icon: Icon(Icons.receipt_long_rounded),
-                            ),
-                            Text(
-                              "Records",
-                              style: TextStyle(color: AppColors.aquaTeal),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // GestureDetector(
+                    //   onTap: () => {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => PTListpage(pts: pts),
+                    //   ),
+                    // ),
+                    //   },
+                    //   child: Container(
+                    //     child: Column(
+                    //       children: [
+                    //         IconButton(
+                    //           onPressed: () {},
+                    //           icon: Icon(Icons.person),
+                    //           color: AppColors.aquaTeal,
+                    //         ),
+                    //         Text(
+                    //           "PT",
+                    //           style: TextStyle(color: AppColors.aquaTeal),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // GestureDetector(
+                    //   onTap: () => {},
+                    //   child: Container(
+                    //     child: Column(
+                    //       children: [
+                    //         IconButton(
+                    //           onPressed: () {},
+                    //           color: AppColors.aquaTeal,
+                    //           icon: Icon(Icons.map),
+                    //         ),
+                    //         Text(
+                    //           "GYM",
+                    //           style: TextStyle(color: AppColors.aquaTeal),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // GestureDetector(
+                    //   onTap: () => {},
+                    //   child: Container(
+                    //     child: Column(
+                    //       children: [
+                    //         IconButton(
+                    //           onPressed: () {},
+                    //           color: AppColors.aquaTeal,
+                    //           icon: Icon(Icons.school),
+                    //         ),
+                    //         Text(
+                    //           "Specialties",
+                    //           style: TextStyle(color: AppColors.aquaTeal),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                    // GestureDetector(
+                    //   onTap: () => {},
+                    //   child: Container(
+                    //     child: Column(
+                    //       children: [
+                    //         IconButton(
+                    //           onPressed: () {},
+                    //           color: AppColors.aquaTeal,
+                    //           icon: Icon(Icons.receipt_long_rounded),
+                    //         ),
+                    //         Text(
+                    //           "Records",
+                    //           style: TextStyle(color: AppColors.aquaTeal),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -230,6 +240,36 @@ class HomePage extends StatelessWidget {
           ),
           Expanded(child: Container(child: TableCalendarEx())),
         ],
+      ),
+    );
+  }
+}
+
+class CateBtn extends StatelessWidget {
+  CateBtn({
+    super.key,
+    required this.onCall,
+    required this.title,
+    required this.ico,
+  });
+  VoidCallback onCall;
+  String title;
+  IconData ico;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => {onCall},
+      child: Container(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(5),
+              child: Icon(ico, color: AppColors.aquaTeal),
+            ),
+            Text(title, style: TextStyle(color: AppColors.aquaTeal)),
+          ],
+        ),
       ),
     );
   }
@@ -327,9 +367,6 @@ class _TableCalendarExState extends State<TableCalendarEx> {
       children: [
         TableCalendar(
           eventLoader: (day) {
-            // if (day.weekday == DateTime.tuesday) {
-            //   return ['Gym', 'Study'];
-            // }
             if (ptSessions.any(
               (session) => isSameDay(session.startTime, day),
             )) {
@@ -427,7 +464,12 @@ class _TableCalendarExState extends State<TableCalendarEx> {
                         (a, b) => a.startTime.compareTo(b.startTime),
                       );
                       return GestureDetector(
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>YourSessionPage())),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => YourSessionPage(),
+                          ),
+                        ),
                         child: ListTile(
                           leading: Icon(
                             Icons.check_box_outline_blank_outlined,

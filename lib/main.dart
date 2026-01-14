@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
 import 'package:ontrain/data/object/pt.dart';
+import 'package:ontrain/feature/book/booking.dart';
 import 'package:ontrain/feature/book/home.dart';
 import 'package:ontrain/feature/book/homepage.dart';
 import 'package:ontrain/feature/login/register_screen.dart';
@@ -67,7 +68,7 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(fontSize: 14, color: Colors.black),
         ),
       ),
-      home:HomeScaff(),
+      home:Booking(),
     );
   }
 }

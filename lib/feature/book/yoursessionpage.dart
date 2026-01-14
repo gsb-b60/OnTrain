@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
 import 'package:ontrain/feature/book/cancelsess.dart';
-import 'package:ontrain/feature/book/sessionpage.dart';
+import 'package:ontrain/feature/book/sessiondisplay/sessionpage.dart';
 import 'package:ontrain/main.dart';
 
 class YourSessionPage extends StatelessWidget {
@@ -205,7 +205,9 @@ class YourSessionPage extends StatelessWidget {
                             ),
                             Spacer(),
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
                               icon: Icon(
                                 Icons.check_circle_rounded,
                                 size: 32,

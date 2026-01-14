@@ -55,7 +55,9 @@ class ProfilePage extends StatelessWidget {
                             child: Align(
                               alignment: Alignment.bottomRight,
                               child: IconButton.filled(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileUpdatePage()));
+                                },
                                 icon: Icon(Icons.edit_outlined),
                               ),
                             ),

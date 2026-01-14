@@ -62,10 +62,81 @@ class ReviewPage extends StatelessWidget {
             ),
           ),
           Text("IFBBQ"),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
+          ReviewControl(),
+
+          SizedBox(height: 100),
+          GestureDetector(
+            onTap: () => {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: Text("Thank For Your Review"),
+                  content: Text(
+                    "Your review is the most beautiful thing in the world",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+              ),
+            },
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppColors.aquaTeal,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+              margin: EdgeInsets.symmetric(horizontal: 30),
+              child: Center(
+                child: Text(
+                  "Add Review",
+                  style: TextStyle(
+                    color: AppColors.light,
+                    fontWeight: FontWeight.w500,
+                    fontSize: AppSizes.small,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ReviewControl extends StatefulWidget {
+  const ReviewControl({super.key});
+
+  @override
+  State<ReviewControl> createState() => _ReviewControlState();
+}
+
+class _ReviewControlState extends State<ReviewControl> {
+  int selectedRate = 0;
+  bool isFavorite = false;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isFavorite = !isFavorite;
+                });
+              },
+              child: Container(
                 margin: EdgeInsets.all(8),
                 height: 40,
                 width: 40,
@@ -73,72 +144,69 @@ class ReviewPage extends StatelessWidget {
                   color: AppColors.aquaTeal,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.favorite, color: AppColors.light),
+                child: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: AppColors.light,
+                ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  border: BoxBorder.all(color: AppColors.aquaTeal),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: BoxBorder.all(color: AppColors.aquaTeal),
+              ),
+              child: Row(
+                children: List.generate(
+                  5,
+                  (index) => GestureDetector(
+                    onTap: () => {
+                      setState(() {
+                        selectedRate = index;
+                      }),
+                    },
+                    child: Icon(
+                      index <= selectedRate ? Icons.star : Icons.star_border,
+                      color: AppColors.aquaTeal,
+                    ),
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Icon(Icons.star, color: AppColors.aquaTeal),
-                    Icon(Icons.star, color: AppColors.aquaTeal),
-                    Icon(Icons.star, color: AppColors.aquaTeal),
-                    Icon(Icons.star, color: AppColors.aquaTeal),
-                    Icon(Icons.star, color: AppColors.aquaTeal),
-                  ],
-                ),
+                // [
+                //   Icon(Icons.star, color: AppColors.aquaTeal),
+                //   Icon(Icons.star, color: AppColors.aquaTeal),
+                //   Icon(Icons.star, color: AppColors.aquaTeal),
+                //   Icon(Icons.star, color: AppColors.aquaTeal),
+                //   Icon(Icons.star, color: AppColors.aquaTeal),
+                // ],
+              ),
+            ),
+          ],
+        ),
+        Container(
+          margin: EdgeInsets.all(30),
+          padding: EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          Container(
-            margin: EdgeInsets.all(30),
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: TextField(
-              maxLines: 5,
-              decoration: InputDecoration(
-                hintText: "Enter your reason here.....",
-                filled: true,
-                fillColor: AppColors.greyAqua,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
-                ),
+          child: TextField(
+            maxLines: 5,
+            decoration: InputDecoration(
+              hintText: "Enter your reason here.....",
+              filled: true,
+              fillColor: AppColors.greyAqua,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
               ),
             ),
           ),
-          SizedBox(height: 100),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColors.aquaTeal,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-            margin: EdgeInsets.symmetric(horizontal: 30),
-            child: Center(
-              child: Text(
-                "Add Review",
-                style: TextStyle(
-                  color: AppColors.light,
-                  fontWeight: FontWeight.w500,
-                  fontSize: AppSizes.small,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
