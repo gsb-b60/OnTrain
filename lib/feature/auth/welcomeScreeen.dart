@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
-import 'package:ontrain/feature/login/login_screen.dart';
-import 'package:ontrain/feature/login/signScreen.dart';
+import 'package:ontrain/feature/auth/signIn.dart';
+import 'package:ontrain/feature/auth/signUpScreen.dart';
 
-class RegisterScreen extends StatelessWidget {
-  const RegisterScreen({super.key});
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class RegisterScreen extends StatelessWidget {
                 GestureDetector(
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LogInScreen()),
+                    MaterialPageRoute(builder: (context) => SignInScreen()),
                   ),
                   child: Container(
                     margin: EdgeInsets.all(8.0),

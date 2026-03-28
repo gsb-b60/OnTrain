@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
 import 'package:ontrain/data/object/pt.dart';
+import 'package:ontrain/data/object/ptSession.dart';
 import 'package:ontrain/feature/book/cancelsess.dart';
 import 'package:ontrain/feature/book/review.dart';
 import 'package:ontrain/feature/book/sessiondisplay/sessiondisplaynoti.dart';

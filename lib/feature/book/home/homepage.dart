@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
+import 'package:ontrain/data/datacreator.dart';
 import 'package:ontrain/data/object/pt.dart';
+import 'package:ontrain/data/object/ptSession.dart';
 import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
 import 'package:ontrain/feature/book/yoursessionpage.dart';
 import 'package:ontrain/feature/profile/profilepage.dart';
@@ -12,44 +14,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<PT> pts = [
-      PT(
-        id: 1,
-        name: "Jane Doe",
-        Pnum: "123-456-7890",
-        email: "",
-        state: PTState.accepted,
-        address: "123 Main St, City, Country",
-        createdAt: DateTime.now(),
-      ),
-      PT(
-        id: 1,
-        name: "Jane Doe",
-        Pnum: "123-456-7890",
-        email: "",
-        state: PTState.accepted,
-        address: "123 Main St, City, Country",
-        createdAt: DateTime.now(),
-      ),
-      PT(
-        id: 1,
-        name: "Jane Doe",
-        Pnum: "123-456-7890",
-        email: "",
-        state: PTState.accepted,
-        address: "123 Main St, City, Country",
-        createdAt: DateTime.now(),
-      ),
-      PT(
-        id: 1,
-        name: "Jane Doe",
-        Pnum: "123-456-7890",
-        email: "",
-        state: PTState.accepted,
-        address: "123 Main St, City, Country",
-        createdAt: DateTime.now(),
-      ),
-    ];
+
     return Scaffold(
       body: Column(
         children: [
@@ -98,6 +63,7 @@ class HomePage extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => ProfilePage(),
                               ),
+                              
                             ),
                             child: CircleAvatar(
                               backgroundImage: AssetImage(
@@ -129,7 +95,9 @@ class HomePage extends StatelessWidget {
                     CateBtn(
                       title: "Favorite",
                       ico: Icons.favorite,
-                      onCall: () {},
+                      onCall: () {
+                        
+                      },
                     ),
                     CateBtn(
                       title: "PT",
@@ -138,7 +106,7 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PTListpage(pts: pts),
+                            builder: (context) => PTListpage(pts: DataCreator.ptList),
                           ),
                         );
                       },
@@ -259,7 +227,9 @@ class CateBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => {onCall},
+      onTap: () => {
+        onCall(),
+      },
       child: Container(
         child: Column(
           children: [

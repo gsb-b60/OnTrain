@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/data/object/pt.dart';
+import 'package:ontrain/data/object/ptSession.dart';
 
 class PTListNoti extends ChangeNotifier {
   List<PTSession> sessions = [

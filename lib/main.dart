@@ -1,65 +1,47 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:intl/intl.dart';
+import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
-import 'package:ontrain/core/constrants/app_size.dart';
 import 'package:ontrain/data/object/pt.dart';
+import 'package:ontrain/feature/auth/authGate.dart';
 import 'package:ontrain/feature/book/booking.dart';
-import 'package:ontrain/feature/book/home.dart';
-import 'package:ontrain/feature/book/homepage.dart';
-import 'package:ontrain/feature/login/register_screen.dart';
-import 'package:ontrain/feature/login/splash_screen.dart';
+import 'package:ontrain/feature/auth/welcomeScreeen.dart';
+import 'package:ontrain/feature/auth/splashScreen.dart';
+import 'package:ontrain/repo/auth/authRepo.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://ctihmfzqfohihmsngcjl.supabase.co',
+    anonKey: 'sb_publishable_US5Qyssn7nDAUelzuMyKkQ_JyVQ5MCO',
+  );
+
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<Authrepo>(
+          create: (_)=> Authrepo(),
+        ),
+        ChangeNotifierProvider<Authcontrolller>(
+          create: (context) => Authcontrolller(context.read<Authrepo>()),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    List<PT> pts = [
-      PT(
-        id: 1,
-        name: "Jane Doe",
-        Pnum: "123-456-7890",
-        email: "",
-        state: PTState.accepted,
-        address: "123 Main St, City, Country",
-        createdAt: DateTime.now(),
-      ),
-      PT(
-        id: 1,
-        name: "Jane Doe",
-        Pnum: "123-456-7890",
-        email: "",
-        state: PTState.accepted,
-        address: "123 Main St, City, Country",
-        createdAt: DateTime.now(),
-      ),
-      PT(
-        id: 1,
-        name: "Jane Doe",
-        Pnum: "123-456-7890",
-        email: "",
-        state: PTState.accepted,
-        address: "123 Main St, City, Country",
-        createdAt: DateTime.now(),
-      ),
-      PT(
-        id: 1,
-        name: "Jane Doe",
-        Pnum: "123-456-7890",
-        email: "",
-        state: PTState.accepted,
-        address: "123 Main St, City, Country",
-        createdAt: DateTime.now(),
-      ),
-    ];
     return MaterialApp(
+      supportedLocales: const [Locale('en')],
       debugShowCheckedModeBanner: false,
-   // routes: ,
       theme: ThemeData(
         brightness: Brightness.light,
         primaryColor: AppColors.aquaTeal,
@@ -68,12 +50,10 @@ class MyApp extends StatelessWidget {
           bodyMedium: TextStyle(fontSize: 14, color: Colors.black),
         ),
       ),
-      home:Booking(),
+      home: AuthGateWay(),
     );
   }
 }
-
-
 
 class StartSplash extends StatefulWidget {
   const StartSplash({super.key});
@@ -89,7 +69,7 @@ class _StartSplashState extends State<StartSplash> {
     Future.delayed(Duration(milliseconds: 1000), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RegisterScreen()),
+        MaterialPageRoute(builder: (context) => WelcomeScreen()),
       );
     });
   }

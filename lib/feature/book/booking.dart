@@ -1,11 +1,7 @@
-import 'dart:nativewrappers/_internal/vm/lib/math_patch.dart';
-
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
-import 'package:ontrain/core/constrants/app_size.dart';
 import 'package:ontrain/data/object/pt.dart';
-import 'package:ontrain/feature/book/yoursessionpage.dart';
+import 'package:ontrain/data/object/ptSession.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class Booking extends StatefulWidget {

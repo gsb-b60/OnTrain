@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/feature/auth/authGate.dart';
 import 'package:ontrain/feature/profile/updateprofilepage.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -56,7 +59,12 @@ class ProfilePage extends StatelessWidget {
                               alignment: Alignment.bottomRight,
                               child: IconButton.filled(
                                 onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileUpdatePage()));
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProfileUpdatePage(),
+                                    ),
+                                  );
                                 },
                                 icon: Icon(Icons.edit_outlined),
                               ),
@@ -96,16 +104,55 @@ class ProfilePage extends StatelessWidget {
             margin: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                SizedBox(
-                  height: 30,
+                SizedBox(height: 30),
+                SettingButton(
+                  ico: Icons.person,
+                  title: "Profile",
+                  onCall: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileUpdatePage(),
+                      ),
+                    ),
+                  },
                 ),
-                SettingButton(ico: Icons.person, title: "Profile",onCall: () => {Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileUpdatePage())) },),
-                SettingButton(ico: Icons.favorite, title: "Favorite",onCall: () => {},),
-                SettingButton(ico: Icons.payment, title: "Payment",onCall: () => {},),
-                SettingButton(ico: Icons.privacy_tip, title: "Private", onCall: ()=>{}),
-                SettingButton(ico: Icons.settings, title: "Settings", onCall: ()=>{}),
-                SettingButton(ico: Icons.question_mark, title: "Helps", onCall: ()=>{}),
-                SettingButton(ico: Icons.logout, title: "Log Out", onCall: ()=>{}),
+                SettingButton(
+                  ico: Icons.favorite,
+                  title: "Favorite",
+                  onCall: () => {},
+                ),
+                SettingButton(
+                  ico: Icons.payment,
+                  title: "Payment",
+                  onCall: () => {},
+                ),
+                SettingButton(
+                  ico: Icons.privacy_tip,
+                  title: "Private",
+                  onCall: () => {},
+                ),
+                SettingButton(
+                  ico: Icons.settings,
+                  title: "Settings",
+                  onCall: () => {},
+                ),
+                SettingButton(
+                  ico: Icons.question_mark,
+                  title: "Helps",
+                  onCall: () => {},
+                ),
+                SettingButton(
+                  ico: Icons.logout,
+                  title: "Log Out",
+                  onCall: () => {
+                    context.read<Authcontrolller>().signOut(),
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => AuthGateWay()),
+                      (route) => false,
+                    ),
+                  },
+                ),
               ],
             ),
           ),
@@ -140,14 +187,11 @@ class SettingButton extends StatelessWidget {
               width: 75,
               decoration: BoxDecoration(
                 color: AppColors.aquaTeal,
-                shape: BoxShape.circle
+                shape: BoxShape.circle,
               ),
               child: Icon(ico, color: AppColors.light),
             ),
-            Text(
-              title,
-              style: TextStyle(fontSize: AppSizes.small),
-            ),
+            Text(title, style: TextStyle(fontSize: AppSizes.small)),
             Spacer(),
             Icon(Icons.arrow_forward_ios, color: AppColors.aquaTeal),
           ],

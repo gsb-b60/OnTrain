@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:ontrain/UI/headerBar.dart';
+import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
-import 'package:ontrain/feature/book/home.dart';
-import 'package:ontrain/feature/book/homepage.dart';
-import 'package:ontrain/feature/login/login_screen.dart';
+import 'package:ontrain/data/enum/userRole.dart';
+import 'package:ontrain/feature/auth/signIn.dart';
+import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -16,65 +19,98 @@ class SignupScreen extends StatefulWidget {
 
 class SignupScreenState extends State<SignupScreen> {
   DateTime selectedDate = DateTime.now();
-  String type = "";
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: Stack(
-      //     children: [
-      //       Center(
-      //         child: Text(
-      //           "Sign Up",
-      //           style: TextStyle(
-      //             fontSize: AppSizes.medium,
-      //             fontWeight: FontWeight.bold,
-      //             color: AppColors.light,
-      //           ),
-      //           textAlign: TextAlign.center,
-      //         ),
-      //       ),
-      //       Align(
-      //         alignment: Alignment.centerLeft,
-      //         child: IconButton(
-      //           onPressed: () {},
-      //           icon: Icon(Icons.arrow_back_ios_sharp, color: AppColors.light),
-      //         ),
-      //       ),
-      //     ],
-      //   ),
+  UserRole? selectedRole;
 
-      //   backgroundColor: AppColors.aquaTeal,
-      // ),
-      body: Column(
-        children: [
-          Container(
-            height: 80,
-            decoration: BoxDecoration(gradient: AppGradients.brand),
-            child: Stack(
+  final passwordControlller = TextEditingController();
+  final emailController = TextEditingController();
+  final nameController = TextEditingController(); 
+  void signUp() async {
+    final name = nameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordControlller.text.trim();
+
+    print("--- Registration Data ---");
+    print("User: ${name} (${selectedRole?.displayName})");
+    print("Email: ${email}");
+    print("Email: ${password}");
+    print(
+      "DOB: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
+    );
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty || selectedRole == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all fields and select a role')),
+      );
+      return;
+    }
+
+    try {
+      context.read<Authcontrolller>().signUp(email, password, selectedRole!, name);
+      
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign up failed: ${e.toString()}')),
+      );
+    }
+  }
+
+  void showCupertinoDatePicker() {
+    showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) => SafeArea(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          height: 300,
+          decoration: BoxDecoration(
+            color: AppColors.gray100,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Column(
               children: [
-                Center(
-                  child: Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      fontSize: AppSizes.medium,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.light,
-                    ),
+                Container(
+                  height: 5,
+                  width: 40,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.gray300,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: AppColors.light),
-                    onPressed: () {
-                      Navigator.pop(context);
+                Expanded(
+                  child: CupertinoDatePicker(
+                    backgroundColor: AppColors.gray100,
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: selectedDate,
+                    onDateTimeChanged: (DateTime newDate) {
+                      setState(() {
+                        selectedDate = newDate;
+                      });
                     },
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          HeaderBar(title: "Sign up"),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -83,7 +119,7 @@ class SignupScreenState extends State<SignupScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Full Name",
+                      "Enter your name",
                       style: TextStyle(
                         fontSize: AppSizes.small,
                         fontWeight: FontWeight.w700,
@@ -92,6 +128,7 @@ class SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                     TextField(
+                      controller: nameController,
                       decoration: InputDecoration(
                         fillColor: AppColors.greyAqua,
                         filled: true,
@@ -101,12 +138,12 @@ class SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
-                        hintText: 'Enter your full name',
+                        hintText: 'your name',
                         hintStyle: TextStyle(color: AppColors.aquaTeal),
                       ),
                     ),
                     Text(
-                      "Pass word",
+                      "Password",
                       style: TextStyle(
                         fontSize: AppSizes.small,
                         fontWeight: FontWeight.w700,
@@ -115,17 +152,14 @@ class SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                     TextField(
+                      obscureText: true,
+                      controller: passwordControlller,
                       decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Enter your password',
                         fillColor: AppColors.greyAqua,
-                        filled: true,
-
-                        contentPadding: EdgeInsets.all(7),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        hintText: '************',
                         hintStyle: TextStyle(color: AppColors.aquaTeal),
+                        filled: true,
                       ),
                     ),
                     Text(
@@ -139,6 +173,7 @@ class SignupScreenState extends State<SignupScreen> {
                     ),
 
                     TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         fillColor: AppColors.greyAqua,
                         filled: true,
@@ -148,30 +183,7 @@ class SignupScreenState extends State<SignupScreen> {
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide.none,
                         ),
-                        hintText: 'example@example.com',
-                        hintStyle: TextStyle(color: AppColors.aquaTeal),
-                      ),
-                    ),
-                    Text(
-                      "Mobile Number",
-                      style: TextStyle(
-                        fontSize: AppSizes.small,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.black,
-                        height: 2.5,
-                      ),
-                    ),
-                    TextField(
-                      decoration: InputDecoration(
-                        fillColor: AppColors.greyAqua,
-                        filled: true,
-
-                        contentPadding: EdgeInsets.all(7),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        hintText: '8xxxxxxxxx',
+                        hintText: 'your email',
                         hintStyle: TextStyle(color: AppColors.aquaTeal),
                       ),
                     ),
@@ -187,21 +199,7 @@ class SignupScreenState extends State<SignupScreen> {
 
                     GestureDetector(
                       onTap: () {
-                        showCupertinoModalPopup<void>(
-                          context: context,
-                          builder: (BuildContext context) => SizedBox(
-                            height: 250,
-                            child: CupertinoDatePicker(
-                              mode: CupertinoDatePickerMode.date,
-                              initialDateTime: selectedDate,
-                              onDateTimeChanged: (DateTime newDate) {
-                                setState(() {
-                                  selectedDate = newDate;
-                                });
-                              },
-                            ),
-                          ),
-                        );
+                        showCupertinoDatePicker();
                       },
                       child: Container(
                         width: double.infinity,
@@ -214,7 +212,9 @@ class SignupScreenState extends State<SignupScreen> {
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            selectedDate.toString().substring(0, 10),
+                            DateFormat(
+                              'dd MM yyyy',
+                            ).format(selectedDate).toString().substring(0, 10),
                             style: TextStyle(color: AppColors.aquaTeal),
                           ),
                         ),
@@ -232,51 +232,53 @@ class SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                         SizedBox(width: 20),
-                        DropdownButton<String>(
-                          items: <String>['User', 'Trainer'].map((
-                            String value,
-                          ) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
+                        DropdownButton<UserRole>(
+                          value: selectedRole,
+                          hint: Text("Select role"),
+                          items: UserRole.values.map((UserRole role) {
+                            return DropdownMenuItem<UserRole>(
+                              value: role,
+                              child: Text(role.displayName),
                             );
                           }).toList(),
-                          onChanged: (String? newValue) {
+                          onChanged: (UserRole? newValue) {
                             setState(() {
-                              type = newValue!;
+                              selectedRole = newValue;
                             });
                           },
-                          value: type.isEmpty ? null : type,
                         ),
                       ],
                     ),
                     SizedBox(height: 30),
                     Column(
                       children: [
-                        Text("By continuing, you agree to"),
-                        Text.rich(
-                          TextSpan(
-                            text: "Terms of Use",
-                            style: TextStyle(color: AppColors.aquaTeal),
-                            children: [
-                              TextSpan(
-                                text: " and ",
-                                style: TextStyle(color: AppColors.black),
-                              ),
-                              TextSpan(
-                                text: "Privacy Policy",
-                                style: TextStyle(color: AppColors.aquaTeal),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Text("By continuing, you agree to"),
+                        // Text.rich(
+                        //   TextSpan(
+                        //     text: "Terms of Use",
+                        //     style: TextStyle(color: AppColors.aquaTeal),
+                        //     children: [
+                        //       TextSpan(
+                        //         text: " and ",
+                        //         style: TextStyle(color: AppColors.black),
+                        //       ),
+                        //       TextSpan(
+                        //         text: "Privacy Policy",
+                        //         style: TextStyle(color: AppColors.aquaTeal),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                         GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomeScaff(),
-                            ),
-                          ),
+                          onTap: () => {
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => HomeScaff(),
+                            //   ),
+                            // ),
+                            signUp(),
+                          },
 
                           child: Container(
                             decoration: BoxDecoration(
@@ -302,27 +304,27 @@ class SignupScreenState extends State<SignupScreen> {
                           ),
                         ),
                         Text("or sign up with"),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.facebook,
-                                size: 40,
-                                color: AppColors.aquaTeal,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.g_mobiledata,
-                                size: 40,
-                                color: AppColors.aquaTeal,
-                              ),
-                            ),
-                          ],
-                        ),
+                        // Row(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   children: [
+                        //     IconButton(
+                        //       onPressed: () {},
+                        //       icon: Icon(
+                        //         Icons.facebook,
+                        //         size: 40,
+                        //         color: AppColors.aquaTeal,
+                        //       ),
+                        //     ),
+                        //     IconButton(
+                        //       onPressed: () {},
+                        //       icon: Icon(
+                        //         Icons.g_mobiledata,
+                        //         size: 40,
+                        //         color: AppColors.aquaTeal,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
                         Text.rich(
                           TextSpan(
                             text: "Already have an account? ",
@@ -339,7 +341,7 @@ class SignupScreenState extends State<SignupScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => LogInScreen(),
+                                        builder: (context) => SignInScreen(),
                                       ),
                                     );
                                   },

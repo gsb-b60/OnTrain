@@ -1,4 +1,5 @@
 import 'package:ontrain/data/object/pt.dart';
+import 'package:ontrain/data/object/ptContrast.dart';
 
 class DataCreator {
   static final _db = DataCreator._internal();
@@ -10,7 +11,7 @@ class DataCreator {
   //  final _db=openDataBase(
   //   join(await getDatabasespath)
   //  );
-  final List<PT> ptList = [
+  static  List<PT> ptList = [
     PT(
       id: 1,
       name: "Nguyen Van An",
