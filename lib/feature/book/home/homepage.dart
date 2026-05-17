@@ -8,6 +8,7 @@ import 'package:ontrain/data/object/ptSession.dart';
 import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
 import 'package:ontrain/feature/book/yoursessionpage.dart';
 import 'package:ontrain/feature/profile/profilepage.dart';
+import 'package:ontrain/feature/specialties/specialtiesScreen.dart';
 import 'package:ontrain/model/stateEnum.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -23,16 +24,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
-    // gọi API 1 lần khi widget được tạo
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthController>().getCurrentUserData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<AuthController>().state;
 
     return Scaffold(
       body: Column(
@@ -72,11 +70,12 @@ class _HomePageState extends State<HomePage> {
                                 "Hi, WelcomeBack",
                                 style: TextStyle(color: AppColors.aquaTeal),
                               ),
-                              Text(
-                                context.select<AuthController, String?>(
-                                      (c) => c.user?.name,
-                                    ) ??
-                                    'Loading...',
+                              Consumer<AuthController>(
+                                builder: (context, authController, child) {
+                                  return Text(
+                                    authController.user?.name ?? 'Loading...',
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -128,7 +127,7 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                PTListpage(pts: DataCreator.ptList),
+                                PTListpage(),
                           ),
                         );
                       },
@@ -137,7 +136,14 @@ class _HomePageState extends State<HomePage> {
                     CateBtn(
                       title: "Specialties",
                       ico: Icons.school,
-                      onCall: () {},
+                      onCall: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SpecialtiesScreen(),
+                          ),
+                        );
+                      },
                     ),
                     CateBtn(
                       title: "Records",

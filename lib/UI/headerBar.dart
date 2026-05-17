@@ -6,9 +6,11 @@ class HeaderBar extends StatelessWidget {
   const HeaderBar({super.key,
   
   required this.title,
+  this.enableBackButton = true,
   });
 
   final String title;
+  final bool enableBackButton ;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,11 @@ class HeaderBar extends StatelessWidget {
             child: IconButton(
               icon: Icon(Icons.arrow_back, color: AppColors.light),
               onPressed: () {
-                Navigator.pop(context);
+                if(enableBackButton)
+                {
+                  Navigator.pop(context);
+                }
+                
               },
             ),
           ),

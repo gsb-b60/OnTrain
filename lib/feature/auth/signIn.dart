@@ -56,7 +56,7 @@ class _SignInScreenState extends State<SignInScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            HeaderBar(title: "Sign In"),
+            HeaderBar(title: "Sign In",enableBackButton: false,),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Column(

@@ -36,20 +36,23 @@ class AuthController extends ChangeNotifier {
 
 
 
-  Future<void> getCurrentUserData() async {
+Future<void> getCurrentUserData() async {
+
+  if(state != ViewState.loading){
     state = ViewState.loading;
     notifyListeners();
-
-    final result = await repo.getCurrentUser();
-
-    if (result.isSuccess) {
-      user = result.data;
-      state = ViewState.success;
-    } else {
-      error = result.error!.message;
-      state = ViewState.error;
-    }
-
-    notifyListeners();
   }
+
+  final result = await repo.getCurrentUser();
+
+  if (result.isSuccess) {
+    user = result.data;
+    state = ViewState.success;
+  } else {
+    error = result.error!.message;
+    state = ViewState.error;
+  }
+
+  notifyListeners();
+}
 }

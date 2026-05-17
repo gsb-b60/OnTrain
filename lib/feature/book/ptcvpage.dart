@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/feature/book/booking.dart';
 
 class PTCVPage extends StatelessWidget {
-  const PTCVPage({super.key});
+  const PTCVPage({super.key, required this.pt});
+
+  final PT pt;
 
   @override
   Widget build(BuildContext context) {
@@ -116,63 +119,67 @@ class PTCVPage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Nguyen Dinh Hieu",
+                                    pt.name,
                                     style: TextStyle(
-                                      fontSize: AppSizes.small,
+                                      fontSize: AppSizes.medium,
                                       color: AppColors.light,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  // Text(
+                                  //   "IFBBQ natural",
+                                  //   style: TextStyle(color: AppColors.light),
+                                  // ),
                                   Text(
-                                    "IFBBQ natural",
+                                    pt.phoneNumber,
                                     style: TextStyle(color: AppColors.light),
                                   ),
                                   Row(
                                     children: [
-                                      Container(
-                                        margin: EdgeInsets.all(4),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.light,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.star,
-                                              size: 14,
-                                              color: AppColors.aquaTeal,
-                                            ),
-                                            Text("  5"),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        margin: EdgeInsets.all(5),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.light,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.comment,
-                                              size: 14,
-                                              color: AppColors.aquaTeal,
-                                            ),
-                                            Text("  40"),
-                                          ],
-                                        ),
-                                      ),
+                                      // Container(
+                                      //   margin: EdgeInsets.all(4),
+                                      //   padding: EdgeInsets.symmetric(
+                                      //     horizontal: 12,
+                                      //   ),
+                                      //   decoration: BoxDecoration(
+                                      //     color: AppColors.light,
+                                      //     borderRadius: BorderRadius.circular(
+                                      //       12,
+                                      //     ),
+                                      //   ),
+                                      //   child: Row(
+                                      //     children: [
+                                      //       Icon(
+                                      //         Icons.star,
+                                      //         size: 14,
+                                      //         color: AppColors.aquaTeal,
+                                      //       ),
+                                      //       Text("  5"),
+                                      //     ],
+                                      //   ),
+                                      // ),
+                                      // Container(
+                                      //   margin: EdgeInsets.all(5),
+                                      //   padding: EdgeInsets.symmetric(
+                                      //     horizontal: 12,
+                                      //   ),
+                                      //   decoration: BoxDecoration(
+                                      //     color: AppColors.light,
+                                      //     borderRadius: BorderRadius.circular(
+                                      //       12,
+                                      //     ),
+                                      //   ),
+                                      //   child: Row(
+                                      //     children: [
+                                      //       Icon(
+                                      //         Icons.comment,
+                                      //         size: 14,
+                                      //         color: AppColors.aquaTeal,
+                                      //       ),
+                                      //       Text("  40"),
+                                      //     ],
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 ],
@@ -184,68 +191,68 @@ class PTCVPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Positioned(
-                    bottom: 14,
-                    right: 0,
-                    left: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                          height: 50,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.light,
-                            borderRadius: BorderRadius.circular(16),
-                            border: BoxBorder.all(
-                              color: AppColors.aquaTeal,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Icon(Icons.work, color: AppColors.aquaTeal),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "15 years",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text("experience"),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          height: 50,
-                          padding: EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: AppColors.light,
-                            borderRadius: BorderRadius.circular(16),
-                            border: BoxBorder.all(
-                              color: AppColors.aquaTeal,
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.lock_clock, color: AppColors.aquaTeal),
-                              Text("Mon - Sat / 9:00-5:00"),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Positioned(
+                  //   bottom: 14,
+                  //   right: 0,
+                  //   left: 0,
+                  //   child: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //     children: [
+                  //       Container(
+                  //         height: 50,
+                  //         padding: EdgeInsets.symmetric(
+                  //           horizontal: 12,
+                  //           vertical: 4,
+                  //         ),
+                  //         decoration: BoxDecoration(
+                  //           color: AppColors.light,
+                  //           borderRadius: BorderRadius.circular(16),
+                  //           border: BoxBorder.all(
+                  //             color: AppColors.aquaTeal,
+                  //             width: 1,
+                  //           ),
+                  //         ),
+                  //         // child: Row(
+                  //         //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //         //   children: [
+                  //         //     Icon(Icons.work, color: AppColors.aquaTeal),
+                  //         //     Column(
+                  //         //       crossAxisAlignment: CrossAxisAlignment.start,
+                  //         //       mainAxisAlignment: MainAxisAlignment.start,
+                  //         //       children: [
+                  //         //         Text(
+                  //         //           "15 years",
+                  //         //           style: TextStyle(
+                  //         //             fontWeight: FontWeight.bold,
+                  //         //           ),
+                  //         //         ),
+                  //         //         Text("experience"),
+                  //         //       ],
+                  //         //     ),
+                  //         //   ],
+                  //         // ),
+                  //       ),
+                  //       Container(
+                  //         height: 50,
+                  //         padding: EdgeInsets.symmetric(horizontal: 12),
+                  //         decoration: BoxDecoration(
+                  //           color: AppColors.light,
+                  //           borderRadius: BorderRadius.circular(16),
+                  //           border: BoxBorder.all(
+                  //             color: AppColors.aquaTeal,
+                  //             width: 1,
+                  //           ),
+                  //         ),
+                  //         child: Row(
+                  //           children: [
+                  //             Icon(Icons.lock_clock, color: AppColors.aquaTeal),
+                  //             Text("Mon - Sat / 9:00-5:00"),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
               Column(
@@ -263,52 +270,52 @@ class PTCVPage extends StatelessWidget {
                             text: "Focus : ",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          TextSpan(text: "some note of the pt  "),
+                          TextSpan(text: pt.notes ?? "..."),
                         ],
                       ),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 30),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Divider(),
-                        Text(
-                          "Profile",
-                          style: TextStyle(
-                            color: AppColors.aquaTeal,
-                            fontWeight: FontWeight.bold,
-                            fontSize: AppSizes.small,
-                          ),
-                        ),
-                        Divider(),
-                        Text("Some thing profile"),
-                        Divider(),
-                        Text(
-                          "Career Path",
-                          style: TextStyle(
-                            color: AppColors.aquaTeal,
-                            fontWeight: FontWeight.bold,
-                            fontSize: AppSizes.small,
-                          ),
-                        ),
-                        Divider(),
-                        Text("Some thing profile"),
-                        Divider(),
-                        Text(
-                          "Hightlights",
-                          style: TextStyle(
-                            color: AppColors.aquaTeal,
-                            fontWeight: FontWeight.bold,
-                            fontSize: AppSizes.small,
-                          ),
-                        ),
-                        Divider(),
-                        Text("Some thing profile"),
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   padding: EdgeInsets.symmetric(horizontal: 30),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Divider(),
+                  //       Text(
+                  //         "Profile",
+                  //         style: TextStyle(
+                  //           color: AppColors.aquaTeal,
+                  //           fontWeight: FontWeight.bold,
+                  //           fontSize: AppSizes.small,
+                  //         ),
+                  //       ),
+                  //       Divider(),
+                  //       Text("Some thing profile"),
+                  //       Divider(),
+                  //       Text(
+                  //         "Career Path",
+                  //         style: TextStyle(
+                  //           color: AppColors.aquaTeal,
+                  //           fontWeight: FontWeight.bold,
+                  //           fontSize: AppSizes.small,
+                  //         ),
+                  //       ),
+                  //       Divider(),
+                  //       Text("Some thing profile"),
+                  //       Divider(),
+                  //       Text(
+                  //         "Hightlights",
+                  //         style: TextStyle(
+                  //           color: AppColors.aquaTeal,
+                  //           fontWeight: FontWeight.bold,
+                  //           fontSize: AppSizes.small,
+                  //         ),
+                  //       ),
+                  //       Divider(),
+                  //       Text("Some thing profile"),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
             ],
