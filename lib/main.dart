@@ -26,8 +26,8 @@ Future<void> main() async {
         Provider<Authrepo>(
           create: (_)=> Authrepo(),
         ),
-        ChangeNotifierProvider<Authcontrolller>(
-          create: (context) => Authcontrolller(context.read<Authrepo>()),
+        ChangeNotifierProvider<AuthController>(
+          create: (context) => AuthController(context.read<Authrepo>()),
         ),
       ],
       child: MyApp(),

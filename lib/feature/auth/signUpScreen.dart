@@ -39,17 +39,27 @@ class SignupScreenState extends State<SignupScreen> {
 
     if (name.isEmpty || email.isEmpty || password.isEmpty || selectedRole == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill in all fields and select a role')),
+        SnackBar(content: Text('Hãy điền đầy đủ thông tin và chọn loại tài khoản')),
       );
       return;
     }
 
     try {
-      context.read<Authcontrolller>().signUp(email, password, selectedRole!, name);
-      
+      final result = await context.read<AuthController>().signUp(email, password, selectedRole!, name);
+      if (result.isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng ký thành công!')),
+          
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng ký thất bại: ${result.error!.message}')),
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign up failed: ${e.toString()}')),
+        SnackBar(content: Text('Đăng ký thất bại: ${e.toString()}')),
       );
     }
   }

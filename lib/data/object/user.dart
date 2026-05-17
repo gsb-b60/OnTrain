@@ -1,7 +1,7 @@
 import 'package:ontrain/data/enum/userRole.dart';
 
 class UserData {
-  final int? id;
+  final String? id;
   final String name;
   final String email;
   final UserRole role;
@@ -17,12 +17,10 @@ class UserData {
 
    factory UserData.fromMap(Map<String, dynamic> map) {
     return UserData(
-      id: map['id'] as int?,
+      id: map['id'] as String?,
       name: map['name'] as String,
       email: map['email'] as String,
-      role: UserRole.values.firstWhere(
-        (e) => e.name == map['role'],
-      ),
+      role: UserRole.fromString(map['role']),
       createdAt: DateTime.parse(map['created_at']),
     );
   }
@@ -33,7 +31,7 @@ class UserData {
       'id': id,
       'name': name,
       'email': email,
-      'role': role.name, // enum → string
+      'role': role.dbValue, // enum → string
       'created_at': createdAt.toIso8601String(),
     };
   }

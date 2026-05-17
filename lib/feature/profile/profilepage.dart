@@ -146,7 +146,7 @@ class ProfilePage extends StatelessWidget {
                   ico: Icons.logout,
                   title: "Log Out",
                   onCall: () => {
-                    context.read<Authcontrolller>().signOut(),
+                    context.read<AuthController>().signOut(),
                     Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (_) => AuthGateWay()),
                       (route) => false,

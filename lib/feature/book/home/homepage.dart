@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/datacreator.dart';
 import 'package:ontrain/data/object/pt.dart';
@@ -7,13 +8,31 @@ import 'package:ontrain/data/object/ptSession.dart';
 import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
 import 'package:ontrain/feature/book/yoursessionpage.dart';
 import 'package:ontrain/feature/profile/profilepage.dart';
+import 'package:ontrain/model/stateEnum.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+
+    // gọi API 1 lần khi widget được tạo
+    Future.microtask(() {
+      context.read<AuthController>().getCurrentUserData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = context.watch<AuthController>().state;
 
     return Scaffold(
       body: Column(
@@ -53,7 +72,12 @@ class HomePage extends StatelessWidget {
                                 "Hi, WelcomeBack",
                                 style: TextStyle(color: AppColors.aquaTeal),
                               ),
-                              Text("Jane Doe"),
+                              Text(
+                                context.select<AuthController, String?>(
+                                      (c) => c.user?.name,
+                                    ) ??
+                                    'Loading...',
+                              ),
                             ],
                           ),
                           Spacer(),
@@ -63,7 +87,6 @@ class HomePage extends StatelessWidget {
                               MaterialPageRoute(
                                 builder: (context) => ProfilePage(),
                               ),
-                              
                             ),
                             child: CircleAvatar(
                               backgroundImage: AssetImage(
@@ -95,9 +118,7 @@ class HomePage extends StatelessWidget {
                     CateBtn(
                       title: "Favorite",
                       ico: Icons.favorite,
-                      onCall: () {
-                        
-                      },
+                      onCall: () {},
                     ),
                     CateBtn(
                       title: "PT",
@@ -106,7 +127,8 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PTListpage(pts: DataCreator.ptList),
+                            builder: (context) =>
+                                PTListpage(pts: DataCreator.ptList),
                           ),
                         );
                       },
@@ -227,9 +249,7 @@ class CateBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => {
-        onCall(),
-      },
+      onTap: () => {onCall()},
       child: Container(
         child: Column(
           children: [

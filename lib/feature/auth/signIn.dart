@@ -33,15 +33,21 @@ class _SignInScreenState extends State<SignInScreen> {
       return;
     }
 
-    try {
-      context.read<Authcontrolller>().signIn(email, password);
-      
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign in failed: ${e.toString()}')),
+    final result = await context.read<AuthController>().signIn(email, password);
+
+    if (result.isError) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result.error!.message)));
+      print(
+        'Đăng nhập thất bại: ${result.error!.message} code ${result.error!.code}',
       );
+      return;
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Đăng nhập thành công!')));
     }
-    print("tring to sign in with email: $email and password: $password");
   }
 
   @override
@@ -92,17 +98,17 @@ class _SignInScreenState extends State<SignInScreen> {
                       suffixIcon: GestureDetector(
                         onTapDown: (_) {
                           setState(() {
-                            isHidden = false; // show while holding
+                            isHidden = false;
                           });
                         },
                         onTapUp: (_) {
                           setState(() {
-                            isHidden = true; // hide when release
+                            isHidden = true;
                           });
                         },
                         onTapCancel: () {
                           setState(() {
-                            isHidden = true; // also hide if gesture cancelled
+                            isHidden = true;
                           });
                         },
                         child: Icon(Icons.visibility),
@@ -112,15 +118,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   Column(
                     children: [
                       GestureDetector(
-                        onTap: () => {
-                          signIn(),
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => HomeScaff(),
-                          //   ),
-                          // ),
-                        },
+                        onTap: () => {signIn()},
                         child: Container(
                           margin: EdgeInsets.symmetric(
                             vertical: 30.0,
