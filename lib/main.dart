@@ -2,14 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ontrain/controller/authControlller.dart';
+import 'package:ontrain/controller/bookingController.dart';
 import 'package:ontrain/controller/ptController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/feature/auth/authGate.dart';
-import 'package:ontrain/feature/book/booking.dart';
+import 'package:ontrain/feature/book/bookingScreen.dart';
 import 'package:ontrain/feature/auth/welcomeScreeen.dart';
 import 'package:ontrain/feature/auth/splashScreen.dart';
 import 'package:ontrain/repo/auth/authRepo.dart';
+import 'package:ontrain/repo/bookingRepository.dart';
 import 'package:ontrain/repo/ptRepository.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -29,16 +31,14 @@ Future<void> main() async {
         ChangeNotifierProvider<AuthController>(
           create: (context) => AuthController(context.read<Authrepo>()),
         ),
-        Provider<Ptrepository>(
-          lazy: false,
-          create: (_) {
-            final repo = Ptrepository();
-            repo.getPTsWithLimit(2);
-            return repo;
-          },
-        ),
+        Provider<Ptrepository>(create: (_) => Ptrepository()),
         ChangeNotifierProvider<PTController>(
           create: (context) => PTController(context.read<Ptrepository>()),
+        ),
+        Provider<BookingRepository>(create: (_) => BookingRepository()),
+        ChangeNotifierProvider<Bookingcontroller>(
+          create: (context) =>
+              Bookingcontroller(context.read<BookingRepository>()),
         ),
       ],
       child: MyApp(),

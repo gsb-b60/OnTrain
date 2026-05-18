@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ontrain/UI/favoriteBtn.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
 import 'package:ontrain/data/object/pt.dart';
-import 'package:ontrain/feature/book/booking.dart';
+import 'package:ontrain/feature/book/bookingScreen.dart';
 
 class PTCVPage extends StatelessWidget {
   const PTCVPage({super.key, required this.pt});
@@ -35,56 +36,56 @@ class PTCVPage extends StatelessWidget {
                                 color: AppColors.light,
                               ),
                             ),
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                color: AppColors.greyAqua,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.calendar_month,
-                                    color: AppColors.aquaTeal,
-                                  ),
-                                  Text(
-                                    "Schedule",
-                                    style: TextStyle(color: AppColors.aquaTeal),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton.filled(
-                              color: AppColors.aquaTeal,
-                              style: IconButton.styleFrom(
-                                backgroundColor: AppColors.greyAqua,
-                              ),
-                              iconSize: 16,
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {},
-                              icon: Icon(Icons.call),
-                            ),
-                            IconButton.filled(
-                              color: AppColors.aquaTeal,
-                              style: IconButton.styleFrom(
-                                backgroundColor: AppColors.greyAqua,
-                              ),
-                              iconSize: 16,
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {},
-                              icon: Icon(Icons.chat),
-                            ),
+                            // Container(
+                            //   padding: EdgeInsets.symmetric(horizontal: 8),
+                            //   decoration: BoxDecoration(
+                            //     borderRadius: BorderRadius.circular(8),
+                            //     color: AppColors.greyAqua,
+                            //   ),
+                            //   child: Row(
+                            //     children: [
+                            //       Icon(
+                            //         Icons.calendar_month,
+                            //         color: AppColors.aquaTeal,
+                            //       ),
+                            //       Text(
+                            //         "Schedule",
+                            //         style: TextStyle(color: AppColors.aquaTeal),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // IconButton.filled(
+                            //   color: AppColors.aquaTeal,
+                            //   style: IconButton.styleFrom(
+                            //     backgroundColor: AppColors.greyAqua,
+                            //   ),
+                            //   iconSize: 16,
+                            //   visualDensity: VisualDensity.compact,
+                            //   onPressed: () {},
+                            //   icon: Icon(Icons.call),
+                            // ),
+                            // IconButton.filled(
+                            //   color: AppColors.aquaTeal,
+                            //   style: IconButton.styleFrom(
+                            //     backgroundColor: AppColors.greyAqua,
+                            //   ),
+                            //   iconSize: 16,
+                            //   visualDensity: VisualDensity.compact,
+                            //   onPressed: () {},
+                            //   icon: Icon(Icons.chat),
+                            // ),
                             Spacer(),
-                            IconButton.filled(
-                              color: AppColors.aquaTeal,
-                              style: IconButton.styleFrom(
-                                backgroundColor: AppColors.greyAqua,
-                              ),
-                              iconSize: 16,
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {},
-                              icon: Icon(Icons.question_mark),
-                            ),
+                            // IconButton.filled(
+                            //   color: AppColors.aquaTeal,
+                            //   style: IconButton.styleFrom(
+                            //     backgroundColor: AppColors.greyAqua,
+                            //   ),
+                            //   iconSize: 16,
+                            //   visualDensity: VisualDensity.compact,
+                            //   onPressed: () {},
+                            //   icon: Icon(Icons.question_mark),
+                            // ),
                             FavoriteIconBtn(pt: pt),
                           ],
                         ),
@@ -314,7 +315,7 @@ class PTCVPage extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>Booking())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>BookingScreen( pt: pt,))),
               child: Container(
                 margin: EdgeInsets.all(12),
                 padding: EdgeInsets.all(12),
@@ -340,34 +341,3 @@ class PTCVPage extends StatelessWidget {
   }
 }
 
-class FavoriteIconBtn extends StatefulWidget {
-  const FavoriteIconBtn({
-    super.key,
-    required this.pt,
-  });
-
-  final PT pt;
-
-  @override
-  State<FavoriteIconBtn> createState() => _FavoriteIconBtnState();
-}
-
-class _FavoriteIconBtnState extends State<FavoriteIconBtn> {
-  @override
-  Widget build(BuildContext context) {
-    return IconButton.filled(
-      color: AppColors.aquaTeal,
-      style: IconButton.styleFrom(
-        backgroundColor: AppColors.greyAqua,
-      ),
-      iconSize: 16,
-      visualDensity: VisualDensity.compact,
-      onPressed: () {
-        setState(() {
-          widget.pt.isFavorite = !(widget.pt.isFavorite ?? false);
-        });
-      },
-      icon: Icon(widget.pt.isFavorite ? Icons.favorite : Icons.favorite_border),
-    );
-  }
-}

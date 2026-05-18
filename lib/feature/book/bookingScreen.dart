@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:ontrain/UI/favoriteBtn.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/data/object/ptSession.dart';
+import 'package:ontrain/feature/book/yoursessionpage.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class Booking extends StatefulWidget {
-  const Booking({super.key});
+class BookingScreen extends StatefulWidget {
+  const BookingScreen({super.key, required this.pt});
+  final PT pt;
 
   @override
-  State<Booking> createState() => _BookingState();
+  State<BookingScreen> createState() => _BookingScreenState();
 }
 
-class _BookingState extends State<Booking> {
+class _BookingScreenState extends State<BookingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +44,7 @@ class _BookingState extends State<Booking> {
                         ),
                         child: Center(
                           child: Text(
-                            "PT NAME",
+                            widget.pt.name,
                             style: TextStyle(
                               color: AppColors.aquaTeal,
                               fontWeight: FontWeight.bold,
@@ -49,46 +53,37 @@ class _BookingState extends State<Booking> {
                         ),
                       ),
                     ),
-                    IconButton.filled(
-                      color: AppColors.aquaTeal,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.greyAqua,
-                      ),
-                      iconSize: 16,
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {},
-                      icon: Icon(Icons.call),
-                    ),
-                    IconButton.filled(
-                      color: AppColors.aquaTeal,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.greyAqua,
-                      ),
-                      iconSize: 16,
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {},
-                      icon: Icon(Icons.chat),
-                    ),
-                    IconButton.filled(
-                      color: AppColors.aquaTeal,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.greyAqua,
-                      ),
-                      iconSize: 16,
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {},
-                      icon: Icon(Icons.question_mark),
-                    ),
-                    IconButton.filled(
-                      color: AppColors.aquaTeal,
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.greyAqua,
-                      ),
-                      iconSize: 16,
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {},
-                      icon: Icon(Icons.favorite),
-                    ),
+                    // IconButton.filled(
+                    //   color: AppColors.aquaTeal,
+                    //   style: IconButton.styleFrom(
+                    //     backgroundColor: AppColors.greyAqua,
+                    //   ),
+                    //   iconSize: 16,
+                    //   visualDensity: VisualDensity.compact,
+                    //   onPressed: () {},
+                    //   icon: Icon(Icons.call),
+                    // ),
+                    // IconButton.filled(
+                    //   color: AppColors.aquaTeal,
+                    //   style: IconButton.styleFrom(
+                    //     backgroundColor: AppColors.greyAqua,
+                    //   ),
+                    //   iconSize: 16,
+                    //   visualDensity: VisualDensity.compact,
+                    //   onPressed: () {},
+                    //   icon: Icon(Icons.chat),
+                    // ),
+                    // IconButton.filled(
+                    //   color: AppColors.aquaTeal,
+                    //   style: IconButton.styleFrom(
+                    //     backgroundColor: AppColors.greyAqua,
+                    //   ),
+                    //   iconSize: 16,
+                    //   visualDensity: VisualDensity.compact,
+                    //   onPressed: () {},
+                    //   icon: Icon(Icons.question_mark),
+                    // ),
+                    FavoriteIconBtn(pt: widget.pt)
                   ],
                 ),
               ],
@@ -112,80 +107,7 @@ class _TableCanlendarBookingState extends State<TableCanlendarBooking> {
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  List<PTSession> ptSessions = [
-    PTSession(
-      id: 1,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 5),
-      startTime: DateTime(2026, 1, 5, 7, 0),
-      endTime: DateTime(2026, 1, 5, 9, 0),
-      notes: 'note for session 1',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 2,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 6, 18, 0),
-      endTime: DateTime(2026, 1, 6, 19, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 3,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 8, 18, 0),
-      endTime: DateTime(2026, 1, 8, 19, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 4,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 8, 9, 0),
-      endTime: DateTime(2026, 1, 8, 11, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 5,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 9, 18, 0),
-      endTime: DateTime(2026, 1, 9, 20, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 6,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 10, 18, 0),
-      endTime: DateTime(2026, 1, 10, 20, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 7,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 12, 18, 0),
-      endTime: DateTime(2026, 1, 12, 19, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 8,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 13, 18, 0),
-      endTime: DateTime(2026, 1, 13, 19, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-  ];
+
   List<String> hours = [
     "5:00",
     "7:00",
@@ -194,6 +116,9 @@ class _TableCanlendarBookingState extends State<TableCanlendarBooking> {
     "13:00",
     "15:00",
     "17:00",
+    "19:00",
+    "19:00",
+    "19:00",
     "19:00",
   ];
 
