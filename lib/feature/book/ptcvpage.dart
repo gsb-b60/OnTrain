@@ -85,16 +85,7 @@ class PTCVPage extends StatelessWidget {
                               onPressed: () {},
                               icon: Icon(Icons.question_mark),
                             ),
-                            IconButton.filled(
-                              color: AppColors.aquaTeal,
-                              style: IconButton.styleFrom(
-                                backgroundColor: AppColors.greyAqua,
-                              ),
-                              iconSize: 16,
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {},
-                              icon: Icon(Icons.favorite),
-                            ),
+                            FavoriteIconBtn(pt: pt),
                           ],
                         ),
                         Row(
@@ -345,6 +336,38 @@ class PTCVPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class FavoriteIconBtn extends StatefulWidget {
+  const FavoriteIconBtn({
+    super.key,
+    required this.pt,
+  });
+
+  final PT pt;
+
+  @override
+  State<FavoriteIconBtn> createState() => _FavoriteIconBtnState();
+}
+
+class _FavoriteIconBtnState extends State<FavoriteIconBtn> {
+  @override
+  Widget build(BuildContext context) {
+    return IconButton.filled(
+      color: AppColors.aquaTeal,
+      style: IconButton.styleFrom(
+        backgroundColor: AppColors.greyAqua,
+      ),
+      iconSize: 16,
+      visualDensity: VisualDensity.compact,
+      onPressed: () {
+        setState(() {
+          widget.pt.isFavorite = !(widget.pt.isFavorite ?? false);
+        });
+      },
+      icon: Icon(widget.pt.isFavorite ? Icons.favorite : Icons.favorite_border),
     );
   }
 }

@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 class PTListpage extends StatefulWidget {
   const PTListpage({super.key});
 
-
   @override
   State<PTListpage> createState() => _PTListpageState();
 }
@@ -69,7 +68,8 @@ class _PTListpageState extends State<PTListpage> {
                   decoration: BoxDecoration(),
                   margin: EdgeInsets.symmetric(horizontal: 35, vertical: 15),
                   child: TextField(
-                    onChanged: (value) => context.read<PTController>().filterByName(value),
+                    onChanged: (value) =>
+                        context.read<PTController>().filterByName(value),
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
@@ -81,7 +81,7 @@ class _PTListpageState extends State<PTListpage> {
                         "Seach ....",
                         style: TextStyle(
                           color: AppColors.aquaTeal,
-                          fontSize: AppSizes.medium   ,
+                          fontSize: AppSizes.medium,
                         ),
                       ),
                       // icon: Icon(Icons.search)
@@ -186,95 +186,93 @@ class _PTListpageState extends State<PTListpage> {
                   return ListView.builder(
                     itemCount: ptController.pts.length,
                     itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          Row(
+                      return Material(
+                        child: InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PTCVPage(
+                                pt: ptController.pts[index],
+                              ),
+                            ),
+                          ),
+                          child: Column(
                             children: [
-                              // Container(
-                              //   padding: EdgeInsets.all(12),
-                              //   child: CircleAvatar(
-                              //     radius: 52,
-                              //     backgroundImage: AssetImage(
-                              //       "assets/PXL_20251014_011048644~2.jpg",
-                              //     ),
-                              //   ),
-                              // ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                              Row(
+                                children: [
+                                  // Container(
+                                  //   padding: EdgeInsets.all(12),
+                                  //   child: CircleAvatar(
+                                  //     radius: 52,
+                                  //     backgroundImage: AssetImage(
+                                  //       "assets/PXL_20251014_011048644~2.jpg",
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Text(
-                                          ptController.pts[index].name,
-                                          style: TextStyle(
-                                            color: AppColors.aquaTeal,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: AppSizes.small,
-                                          ),
-                                        ),
-                                        Text(ptController.pts[index].phoneNumber),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PTCVPage(pt: ptController.pts[index],),
-                                              ),
-                                            );
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 6,
-                                              horizontal: 10,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              border: BoxBorder.all(
-                                                color: AppColors.aquaTeal,
-                                              ),
-                                            ),
-                                            child: Text(
-                                              "info",
+                                        
+                                        Row(
+                                          children: [
+                                            Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              ptController.pts[index].name,
                                               style: TextStyle(
                                                 color: AppColors.aquaTeal,
                                                 fontWeight: FontWeight.bold,
+                                                fontSize: AppSizes.medium,
                                               ),
                                             ),
-                                          ),
+                                            Text(
+                                              ptController.pts[index].phoneNumber,
+                                            ),
+                                          ],
                                         ),
-                                        Spacer(),
-
-                                        Icon(
-                                          Icons.schedule,
-                                          color: AppColors.aquaTeal,
-                                        ),
-                                        Icon(
-                                          Icons.question_mark,
-                                          color: AppColors.aquaTeal,
-                                        ),
-                                        Icon(
-                                          Icons.favorite,
-                                          color: AppColors.aquaTeal,
+                                            Spacer(),
+                          
+                                            // Icon(
+                                            //   Icons.schedule,
+                                            //   color: AppColors.aquaTeal,
+                                            // ),
+                                            // Icon(
+                                            //   Icons.question_mark,
+                                            //   color: AppColors.aquaTeal,
+                                            // ),
+                                            Selector<PTController, bool>(
+                                              selector: (context, controller) =>controller.pts[index].isFavorite,
+                                              builder:(context, isFavorite, child) {
+                                                    return GestureDetector(
+                                                      onTap: () {
+                                                        ptController.toggleFavorite(
+                                                          index,
+                                                        );
+                                                      },
+                                                      child: Icon(
+                                                        isFavorite
+                                                            ? Icons.favorite
+                                                            : Icons.favorite_border,
+                                                        color: AppColors.aquaTeal,
+                                                      ),
+                                                    );
+                                                  },
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
+                              Divider(),
                             ],
                           ),
-                          Divider(),
-                        ],
+                        ),
                       );
                     },
                   );

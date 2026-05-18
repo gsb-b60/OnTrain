@@ -104,5 +104,5 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/logo/ontrain_logo.png"
 
-  # adaptive_icon_foreground: "assets/logo/onTrainLogoTrans.png"
-  # adaptive_icon_background: "#f7f6f7"
+  adaptive_icon_foreground: "assets/logo/onTrainLogoTrans.png"
+  adaptive_icon_background: "#ffffff"

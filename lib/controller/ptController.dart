@@ -57,4 +57,10 @@ class PTController extends ChangeNotifier {
     _pts = List.from(_allPts);
     notifyListeners();
   }
+
+  void toggleFavorite(int index) {
+    final pt = _pts[index];
+    pt.isFavorite = !(pt.isFavorite ?? false);
+    notifyListeners();
+  }
 }

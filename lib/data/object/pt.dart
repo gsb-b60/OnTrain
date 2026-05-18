@@ -9,6 +9,7 @@ class PT {
   final DateTime? createdAt;
   final PTState status;
   final String? notes;
+  bool isFavorite;
 
   PT({
     required this.id,
@@ -18,6 +19,7 @@ class PT {
     this.address,
     this.createdAt,
     this.notes,
+    this.isFavorite = false,
     required this.status,
   });
 
@@ -33,6 +35,7 @@ class PT {
           : null,
       status: _parseStatus(map['status'] as String?),
       notes: map['notes'] as String?,
+      isFavorite: map['isFavorite'] as bool? ?? false,
     );
   }
 
@@ -58,6 +61,7 @@ class PT {
       'createdAt': createdAt?.toIso8601String(),
       'status': status.name,
       'notes': notes,
+      'isFavorite': isFavorite,
     };
   }
 
@@ -71,7 +75,8 @@ class PT {
         'address: $address, '
         'createdAt: ${createdAt?.toIso8601String()}, '
         'status: ${status.name}'
-          'notes: $notes'
+        'notes: $notes'
+        'favorite: $isFavorite'
         ')';
   }
 }
