@@ -68,7 +68,7 @@ Controllers (`ChangeNotifierProvider`), constructed in dependency order:
 1. `AuthController(repo)` — manages `signIn`/`signUp`/`signOut`, fetches `UserData` from the `profile` table, exposes `ViewState` (`idle`/`loading`/`success`/`error`)
 2. `Calendarcontroller` — calendar focus + bookings-for-selected-date filter (uses `table_calendar`'s `isSameDay`)
 3. `Bookingcontroller(repo, authController, calendarController)` — fetches/inserts bookings, tracks `_ptID` for the currently viewed PT
-4. `PTController(repo, authController, bookingController)` — list, search (`filterByName`/`clearFilter`), favorite toggle, selected PT; calls `initController()` on creation which preloads PTs
+4. `PTController(repo, authController, bookingController)` — list, search (`filterByName`/`clearFilter`), specialty filter (`filterBySpecialty`/`currentSpecialty`), favorite toggle, selected PT; calls `initController()` on creation which preloads PTs
 
 `AuthGateWay` (root widget) listens to `Supabase.instance.client.auth.onAuthStateChange` and switches between `SignInScreen` and `HomePage`.
 
@@ -80,6 +80,10 @@ Controllers (`ChangeNotifierProvider`), constructed in dependency order:
 - Domain models use `fromMap` / `toMap` factories for Supabase JSON interop (e.g., `Booking.fromMap`, `PT.fromMap`).
 - Shared widgets live in `lib/UI/` (e.g., `HeaderBar`, `FavoriteIconBtn`).
 - Calendar uses `table_calendar`; styled with `AppColors.aquaTeal` (markers) and `AppColors.mintLight` (today highlight).
+- Specialty filtering matches the PT's `notes` ("Focus") field — there is no dedicated specialty column in the `PT` table. `filterBySpecialty(null)` clears it; the PT list shows an active-specialty chip (`PTListpage`).
+- `BookingScreen` renders an hour-slot grid for the selected day; tapping a free slot opens a confirm dialog and calls `Bookingcontroller.insertBooking(time)` (returns `Future<bool>`, guards null client/PT ids, surfaces failures via `error`). `YourSessionPage` now takes optional `booking`/`pt` params; `CancelAppoint` takes `bookingId`.
+- Session tabs (`sessionpage.dart`) filter a real `SessionState` and render a `_StatusChip` (colored dot + label) — don't fall back to the mock `Get*List()` methods in `sessiondisplaynoti.dart`/`ptlistpagenoti.dart`.
+- Deprecated APIs are off limits: use `color.withValues(alpha:)` (not `withOpacity`) and `WidgetStateProperty` (not `MaterialStateProperty`). Don't add `print()` in shipped code (`avoid_print`). Async code must guard `BuildContext` with `mounted`/`context.mounted` after `await`.
 
 ## Supabase
 
@@ -99,6 +103,7 @@ Controllers (`ChangeNotifierProvider`), constructed in dependency order:
 - Several UI strings and most error messages are in Vietnamese; mixed with English throughout the codebase.
 - `flutter_localization` is in `pubspec.yaml` but `L10n/app_en.arb` is empty — localization is not yet wired.
 - Feature `book/` and feature `PTDisplay/` overlap: `book/searchPT/` has `ptlistpage.dart` and `filterpage.dart`; `feature/PTDisplay/` has its own `ptlistpage.dart` and `ptlistpagenoti.dart`. When editing PT list UIs, check both locations.
+- `flutter analyze` is at 0 errors / 0 warnings. The remaining `info`s are all `file_names` / `non_constant_identifier_names` lints on legacy WIP filenames (e.g., `authControlller.dart`, `welcomeScreeen.dart`, `bookingRepository.dart`) and dead model fields (`ptSepecialties.dart` `PTID`/`Notes`) — left as-is on purpose because renaming ripples across imports.
 
 ## Reading order for new contributors
 
