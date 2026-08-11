@@ -17,19 +17,26 @@ class BookingRepository {
                   """)
           .eq("pt_id", ptId);
 
-      if (response == null || response.isEmpty) {
-        return Result.failure(
-          RepoError(message: 'Failed to fetch bookings', code: 500),
-        );
-      }
-
+      // An empty result is a valid state (no bookings yet), not an error.
       final bookings = response.map((e) => Booking.fromMap(e)).toList();
-      print("Fetched bookings: $bookings");
       return Result.success(bookings);
     } catch (e) {
-      print("Error fetching bookings: $e");
       return Result.failure(
         RepoError(message: 'Error fetching bookings: $e', code: 500),
+      );
+    }
+  }
+
+  Future<Result<void>> insertBooking(Booking booking) async {
+    try {
+      await _supabaseClient
+          .from("Booking")
+          .insert(booking.toInsertMap()).select();
+      return Result.success(null);
+    } catch (e) {
+      return Result.failure(
+        
+        RepoError(message: 'Error inserting booking: $e', code: 500),
       );
     }
   }

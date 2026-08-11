@@ -22,7 +22,7 @@ class ProfilePage extends StatelessWidget {
               children: [
                 Stack(
                   children: [
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       height: 70,
                       child: Center(

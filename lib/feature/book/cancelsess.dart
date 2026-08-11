@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
 
-enum CancelReason { Rescheduling, Weather, work, others }
+enum CancelReason { rescheduling, weather, work, others }
 
 class CancelAppoint extends StatefulWidget {
-  const CancelAppoint({super.key});
+  const CancelAppoint({super.key, this.bookingId});
+
+  /// The booking being cancelled, if known.
+  final String? bookingId;
 
   @override
   State<CancelAppoint> createState() => _CancelAppointState();
@@ -80,18 +83,18 @@ class _CancelAppointState extends State<CancelAppoint> {
                       children: [
                         RadioListTile<CancelReason>(
                           title: Text("Rescheduling"),
-                          value: CancelReason.Rescheduling,
-                          
+                          value: CancelReason.rescheduling,
+
                         ),
                         RadioListTile<CancelReason>(
                           title: Text("Unexpected Work"),
                           value: CancelReason.work,
-                          
+
                         ),
                         RadioListTile<CancelReason>(
                           title: Text("Weather conditions"),
-                          value: CancelReason.Weather,
-                          
+                          value: CancelReason.weather,
+
                         ),
                         RadioListTile<CancelReason>(
                           title: Text("Others"),
@@ -113,7 +116,7 @@ class _CancelAppointState extends State<CancelAppoint> {
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: Colors.black.withValues(alpha: 0.08),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),

@@ -17,7 +17,7 @@ class ProfileUpdatePage extends StatelessWidget {
               children: [
                 Stack(
                   children: [
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       height: 65,
                       child: Center(

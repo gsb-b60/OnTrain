@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     Spacer(),
-                    Container(
+                    SizedBox(
                       height: 40,
                       width: 170,
                       child: Row(
@@ -234,7 +234,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          Expanded(child: Container(child: TableCalendarEx())),
+          Expanded(child: TableCalendarEx()),
         ],
       ),
     );
@@ -256,16 +256,14 @@ class CateBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => {onCall()},
-      child: Container(
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(5),
-              child: Icon(ico, color: AppColors.aquaTeal),
-            ),
-            Text(title, style: TextStyle(color: AppColors.aquaTeal)),
-          ],
-        ),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(5),
+            child: Icon(ico, color: AppColors.aquaTeal),
+          ),
+          Text(title, style: TextStyle(color: AppColors.aquaTeal)),
+        ],
       ),
     );
   }

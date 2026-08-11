@@ -2,17 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/data/object/booking.dart';
+import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/feature/book/cancelsess.dart';
-import 'package:ontrain/feature/book/sessiondisplay/sessionpage.dart';
-import 'package:ontrain/main.dart';
 
 class YourSessionPage extends StatelessWidget {
   const YourSessionPage({
     super.key,
+    this.booking,
+    this.pt,
   });
+
+  /// The booking being confirmed/viewed. Falls back to part-less display
+  /// when null (e.g. when opened from a mock-flow screen).
+  final Booking? booking;
+
+  /// The PT the session belongs to. Falls back to the booking's PT.
+  final PT? pt;
+
+  PT? get _pt => pt ?? booking?.pt;
+  DateTime get _time =>
+      booking?.startTime ??
+      booking?.createdAt ??
+      DateTime.now();
 
   @override
   Widget build(BuildContext context) {
+    final displayName = _pt?.name ?? "Personal Trainer";
+    final displayNote =
+        booking?.notes?.isNotEmpty == true
+            ? booking!.notes!
+            : "Focus : ${_pt?.notes ?? "..."}";
+    final displayDate = DateFormat("dd/MM/yyyy").format(_time);
+    final displayClock = DateFormat("EEE hh:mm a").format(_time);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -25,15 +48,15 @@ class YourSessionPage extends StatelessWidget {
                   children: [
                     Stack(
                       children: [
-                        Container(
+                        SizedBox(
                           height: 65,
                           width: double.infinity,
                           child: Center(
                             child: Text(
-                              "Your Session",
+                              "Booking Details",
                               style: TextStyle(
                                 color: AppColors.light,
-                                fontSize: AppSizes.small,
+                                fontSize: AppSizes.semiLarge,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -76,62 +99,16 @@ class YourSessionPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Dr. Emma Hall",
+                                  displayName,
                                   style: TextStyle(
                                     color: AppColors.aquaTeal,
-                                    fontSize: AppSizes.small,
+                                    fontSize: AppSizes.medium,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text("IFBBQ"),
                                 Row(
                                   children: [
-                                    Container(
-                                      margin: EdgeInsets.all(8),
-                                      width: 60,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: BoxBorder.all(
-                                          color: Colors.grey,
-                                          width: 0.5,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Icon(
-                                            Icons.star,
-                                            size: 16,
-                                            color: AppColors.aquaTeal,
-                                          ),
-                                          Text("5"),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 60,
-                                      margin: EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: BoxBorder.all(
-                                          color: Colors.grey,
-                                          width: 0.5,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          Icon(
-                                            Icons.comment,
-                                            size: 16,
-                                            color: AppColors.aquaTeal,
-                                          ),
-                                          Text("40"),
-                                        ],
-                                      ),
-                                    ),
                                     Spacer(),
                                     GestureDetector(
                                       onTap: () {},
@@ -143,23 +120,9 @@ class YourSessionPage extends StatelessWidget {
                                           shape: BoxShape.circle,
                                         ),
                                         child: Icon(
-                                          Icons.question_mark,
-                                          size: 18,
-                                          color: AppColors.aquaTeal,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {},
-                                      child: Container(
-                                        margin: EdgeInsets.all(5),
-                                        padding: EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.greyAqua,
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          Icons.favorite,
+                                          (_pt?.isFavorite == true)
+                                              ? Icons.favorite
+                                              : Icons.favorite_border,
                                           size: 18,
                                           color: AppColors.aquaTeal,
                                         ),
@@ -176,7 +139,7 @@ class YourSessionPage extends StatelessWidget {
                   ],
                 ),
               ),
-    
+
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 30),
                 child: Column(
@@ -196,7 +159,7 @@ class YourSessionPage extends StatelessWidget {
                               ),
                               padding: EdgeInsets.all(8),
                               child: Text(
-                                DateFormat("dd/MM/yyyy").format(DateTime.now()),
+                                displayDate,
                                 style: TextStyle(
                                   color: AppColors.light,
                                   fontWeight: FontWeight.bold,
@@ -216,7 +179,14 @@ class YourSessionPage extends StatelessWidget {
                             ),
                             IconButton(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>CancelAppoint()));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CancelAppoint(
+                                      bookingId: booking?.id,
+                                    ),
+                                  ),
+                                );
                               },
                               icon: Icon(
                                 Icons.cancel_rounded,
@@ -228,19 +198,16 @@ class YourSessionPage extends StatelessWidget {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text(
-                            DateFormat("EEE hh:mm").format(DateTime.now()),
-                          ),
+                          child: Text(displayClock),
                         ),
                       ],
                     ),
-                    Container(
-                      child: Column(
-                        children: [
-                          Divider(),
-                          Row(
-                            children: [
-                              Text("Booking for"),
+                    Column(
+                      children: [
+                        Divider(),
+                        Row(
+                          children: [
+                            Text("Booking for"),
                               Spacer(),
                               Text(
                                 "another person",
@@ -251,61 +218,16 @@ class YourSessionPage extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Row(
-                            children: [
-                              Text("Full Name"),
-                              Spacer(),
-                              Text(
-                                "Jane Doe",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: AppSizes.small,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text("Age"),
-                              Spacer(),
-                              Text(
-                                "30",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: AppSizes.small,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text("Gender"),
-                              Spacer(),
-                              Text(
-                                "Female",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: AppSizes.small,
-                                ),
-                              ),
-                            ],
-                          ),
                           Divider(),
+                          Text(
+                            displayNote,
+                            style: TextStyle(
+                              color: AppColors.gray700,
+                              fontSize: AppSizes.small,
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-    
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          width: double.infinity,
-                          child: Text("Problem"),
-                        ),
-                        Text("problem for something"),
-                      ],
-                    ),
                     SizedBox(height: 60),
                   ],
                 ),

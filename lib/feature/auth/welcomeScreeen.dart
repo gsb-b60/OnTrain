@@ -10,11 +10,10 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Spacer(),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Spacer(),
             Image.asset(
               "assets/fitness-app-main.png",
               height: AppSizes.imageHeight.toDouble(),
@@ -100,7 +99,6 @@ class WelcomeScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

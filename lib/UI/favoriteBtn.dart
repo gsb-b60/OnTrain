@@ -26,7 +26,7 @@ class _FavoriteIconBtnState extends State<FavoriteIconBtn> {
       visualDensity: VisualDensity.compact,
       onPressed: () {
         setState(() {
-          widget.pt.isFavorite = !(widget.pt.isFavorite ?? false);
+          widget.pt.isFavorite = !widget.pt.isFavorite;
         });
       },
       icon: Icon(widget.pt.isFavorite ? Icons.favorite : Icons.favorite_border),

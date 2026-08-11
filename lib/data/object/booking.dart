@@ -62,6 +62,16 @@ class Booking {
     };
   }
 
+  Map<String, dynamic> toInsertMap() {
+  return {
+    'start_time': startTime?.toIso8601String(),
+    'end_time': endTime?.toIso8601String(),
+    'client_id': clientId,
+    'pt_id': ptId,
+    'notes': notes,
+  };
+}
+
   /// TO STRING (debug / logging)
   @override
   String toString() {

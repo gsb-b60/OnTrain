@@ -29,14 +29,6 @@ class SignupScreenState extends State<SignupScreen> {
     final email = emailController.text.trim();
     final password = passwordControlller.text.trim();
 
-    print("--- Registration Data ---");
-    print("User: ${name} (${selectedRole?.displayName})");
-    print("Email: ${email}");
-    print("Email: ${password}");
-    print(
-      "DOB: ${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-    );
-
     if (name.isEmpty || email.isEmpty || password.isEmpty || selectedRole == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Hãy điền đầy đủ thông tin và chọn loại tài khoản')),
@@ -46,6 +38,9 @@ class SignupScreenState extends State<SignupScreen> {
 
     try {
       final result = await context.read<AuthController>().signUp(email, password, selectedRole!, name);
+      if (!mounted) {
+        return;
+      }
       if (result.isSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Đăng ký thành công!')),
@@ -76,7 +71,7 @@ class SignupScreenState extends State<SignupScreen> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),

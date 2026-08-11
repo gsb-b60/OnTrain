@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ontrain/controller/ptController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:provider/provider.dart';
 
 class Filterpage extends StatefulWidget {
   const Filterpage({super.key});
@@ -17,6 +19,16 @@ class _FilterpageState extends State<Filterpage> {
   bool isSenior = false;
   bool isJunior = false;
   double age = 0.3;
+
+  void _applyAndPop() {
+    final controller = context.read<PTController>();
+    // PT gender is not stored on the model; approximate with name-based
+    // heuristics is not reliable, so this passes through as a no-op filter
+    // that keeps the list visible. Structure is ready for a real
+    // gender/experience field once the Supabase schema exposes one.
+    controller.refreshPTs();
+    Navigator.pop(context);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -227,6 +239,28 @@ class _FilterpageState extends State<Filterpage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [Text("20"), Text("40"), Text("60"), Text("80")],
+                  ),
+                ),
+                SizedBox(height: 40),
+                GestureDetector(
+                  onTap: _applyAndPop,
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: AppColors.aquaTeal,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Apply Filters",
+                        style: TextStyle(
+                          color: AppColors.light,
+                          fontWeight: FontWeight.bold,
+                          fontSize: AppSizes.medium,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ],

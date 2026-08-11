@@ -129,6 +129,20 @@ class _SessionPageState extends State<SessionPage> {
     ),
   ];
 
+  // Realistic state spread so each tab shows meaningful content.
+  late final List<PTSession> _completed = sessions
+      .where((s) => s.id.isEven)
+      .map((s) => s..state = SessionState.completed)
+      .toList();
+  late final List<PTSession> _canceled = sessions
+      .where((s) => s.id.isOdd && s.id > 5)
+      .map((s) => s..state = SessionState.canceled)
+      .toList();
+  late final List<PTSession> _upcoming = sessions
+      .where((s) => !_completed.contains(s) && !_canceled.contains(s))
+      .map((s) => s..state = SessionState.booked)
+      .toList();
+
   _changePage(int index) {
     setState(() {
       pageIndex = index;
@@ -168,8 +182,8 @@ class _SessionPageState extends State<SessionPage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: pageIndex == 0
-                        ? MaterialStateProperty.all(AppColors.aquaTeal)
-                        : MaterialStateProperty.all(AppColors.light),
+                        ? WidgetStateProperty.all(AppColors.aquaTeal)
+                        : WidgetStateProperty.all(AppColors.light),
                   ),
                   onPressed: () => _changePage(0),
                   child: Text("Complete", style: TextStyle(color:pageIndex == 0? AppColors.light:AppColors.black),),
@@ -177,8 +191,8 @@ class _SessionPageState extends State<SessionPage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: pageIndex == 1
-                        ? MaterialStateProperty.all(AppColors.aquaTeal)
-                        : MaterialStateProperty.all(AppColors.light),
+                        ? WidgetStateProperty.all(AppColors.aquaTeal)
+                        : WidgetStateProperty.all(AppColors.light),
                   ),
                   onPressed: () => _changePage(1),
                   child: Text("Upcoming", style: TextStyle(color:pageIndex == 1? AppColors.light:AppColors.black)),
@@ -186,8 +200,8 @@ class _SessionPageState extends State<SessionPage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: pageIndex == 2
-                        ? MaterialStateProperty.all(AppColors.aquaTeal)
-                        : MaterialStateProperty.all(AppColors.light),
+                        ? WidgetStateProperty.all(AppColors.aquaTeal)
+                        : WidgetStateProperty.all(AppColors.light),
                   ),
                   onPressed: () => _changePage(2),
                   child: Text("Cancelled", style: TextStyle(color:pageIndex == 2? AppColors.light:AppColors.black)),
@@ -198,9 +212,9 @@ class _SessionPageState extends State<SessionPage> {
 
           Expanded(
             child: <Widget>[
-              CompeteSess(sessions: sessions),
-              UpcomingPage(pts: sessions),
-              CancelPage(sessions: sessions),
+              CompeteSess(sessions: _completed, accent: AppColors.aquaTeal),
+              UpcomingPage(pts: _upcoming, accent: AppColors.aquaTeal),
+              CancelPage(sessions: _canceled, accent: AppColors.gray500),
             ][pageIndex],
           ),
         ],
@@ -210,9 +224,12 @@ class _SessionPageState extends State<SessionPage> {
 }
 
 class CompeteSess extends StatelessWidget {
-  const CompeteSess({super.key, required this.sessions});
+  const CompeteSess({super.key, required this.sessions, this.accent});
 
   final List<PTSession> sessions;
+
+  /// Accent color used by the status chip.
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
@@ -231,18 +248,28 @@ class CompeteSess extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "PT. Dinh Hieu",
-                          style: TextStyle(
-                            color: AppColors.aquaTeal,
-                            fontSize: AppSizes.small,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "PT. Dinh Hieu",
+                              style: TextStyle(
+                                color: AppColors.aquaTeal,
+                                fontSize: AppSizes.small,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text("IFBBQ"),
+                          ],
                         ),
-                        Text("IFBBQ"),
+                        const Spacer(),
+                        _StatusChip(
+                          label: "Completed",
+                          color: accent ?? AppColors.aquaTeal,
+                        ),
                       ],
                     ),
                     Row(
@@ -321,9 +348,12 @@ class CompeteSess extends StatelessWidget {
 }
 
 class CancelPage extends StatelessWidget {
-  const CancelPage({super.key, required this.sessions});
+  const CancelPage({super.key, required this.sessions, this.accent});
 
   final List<PTSession> sessions;
+
+  /// Accent color used by the status chip.
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
@@ -341,18 +371,28 @@ class CancelPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "PT. Dinh Hieu",
-                          style: TextStyle(
-                            color: AppColors.aquaTeal,
-                            fontSize: AppSizes.small,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "PT. Dinh Hieu",
+                              style: TextStyle(
+                                color: AppColors.aquaTeal,
+                                fontSize: AppSizes.small,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text("IFBBQ"),
+                          ],
                         ),
-                        Text("IFBBQ"),
+                        const Spacer(),
+                        _StatusChip(
+                          label: "Canceled",
+                          color: accent ?? AppColors.gray500,
+                        ),
                       ],
                     ),
                     Row(
@@ -411,9 +451,12 @@ class CancelPage extends StatelessWidget {
 }
 
 class UpcomingPage extends StatelessWidget {
-  const UpcomingPage({super.key, required this.pts});
+  const UpcomingPage({super.key, required this.pts, this.accent});
 
   final List<PTSession> pts;
+
+  /// Accent color used by the status chip.
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
@@ -431,18 +474,28 @@ class UpcomingPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
+                    Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "PT. Dinh Hieu",
-                          style: TextStyle(
-                            color: AppColors.aquaTeal,
-                            fontSize: AppSizes.small,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "PT. Dinh Hieu",
+                              style: TextStyle(
+                                color: AppColors.aquaTeal,
+                                fontSize: AppSizes.small,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text("IFBBQ"),
+                          ],
                         ),
-                        Text("IFBBQ"),
+                        const Spacer(),
+                        _StatusChip(
+                          label: "Upcoming",
+                          color: accent ?? AppColors.aquaTeal,
+                        ),
                       ],
                     ),
                     Row(
@@ -515,7 +568,7 @@ class UpcomingPage extends StatelessWidget {
                         Spacer(),
                         IconButton(
                           onPressed: () {
-                            
+
                           },
                           icon: Icon(Icons.check, color: AppColors.aquaTeal),
                         ),
@@ -531,6 +584,41 @@ class UpcomingPage extends StatelessWidget {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+/// Small rounded badge used to label a session's status.
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color, width: 1),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.circle, size: 8, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: AppSizes.small - 2,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/UI/headerBar.dart';
+import 'package:ontrain/controller/ptController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
+import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
+import 'package:provider/provider.dart';
 
 class Specialty {
   final String title;
@@ -109,7 +112,17 @@ class SpecialtiesScreen extends StatelessWidget {
                 final specialty = specialties[index];
                 return GestureDetector(
                   onTap: () {
-                    // Logic to filter PTs by specialty would go here
+                    context.read<PTController>().filterBySpecialty(
+                      specialty.title,
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PTListpage(
+                          initialSpecialty: specialty.title,
+                        ),
+                      ),
+                    );
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -118,7 +131,7 @@ class SpecialtiesScreen extends StatelessWidget {
                       border: Border.all(color: AppColors.greyAqua, width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.black.withOpacity(0.05),
+                          color: AppColors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),

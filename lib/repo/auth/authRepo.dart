@@ -23,7 +23,6 @@ class Authrepo {
       }
       return Result.success(_supabaseClient.auth.currentUser!);
     } catch (e) {
-      print("Error signing in catch: $e");
       return Result.failure(
         AuthErrorHandle.mapError(e),
       );
@@ -47,7 +46,7 @@ class Authrepo {
         );
       }
 
-      final userResult = await _supabaseClient.from("profile").insert({
+      await _supabaseClient.from("profile").insert({
         "id": respone.user!.id,
         "email": email,
         "role": role.dbValue,
@@ -55,7 +54,6 @@ class Authrepo {
       });
       return Result.success(respone.user);
     } catch (e) {
-      print('Error signing up: $e');
       return Result.failure(AuthErrorHandle.mapError(e));
     }
   }
@@ -66,7 +64,6 @@ class Authrepo {
 
       return Result.success("signed out ");
     } catch (e) {
-      print('Error signing out: $e');
       return Result.failure(
         RepoError(message: 'Failed to sign out', code: 500),
       );

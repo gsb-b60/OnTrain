@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/controller/bookingController.dart';
+import 'package:ontrain/controller/calendarController.dart';
 import 'package:ontrain/controller/ptController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
@@ -27,18 +28,44 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
+        // repositories
         Provider<Authrepo>(create: (_) => Authrepo()),
+
+        Provider<Ptrepository>(create: (_) => Ptrepository()),
+
+        Provider<BookingRepository>(create: (_) => BookingRepository()),
+
+        // base controllers
         ChangeNotifierProvider<AuthController>(
           create: (context) => AuthController(context.read<Authrepo>()),
         ),
-        Provider<Ptrepository>(create: (_) => Ptrepository()),
-        ChangeNotifierProvider<PTController>(
-          create: (context) => PTController(context.read<Ptrepository>()),
+
+        ChangeNotifierProvider<Calendarcontroller>(
+          create: (_) => Calendarcontroller(),
         ),
-        Provider<BookingRepository>(create: (_) => BookingRepository()),
+
+        // depends on:
+        // BookingRepository
+        // AuthController
+        // Calendarcontroller
         ChangeNotifierProvider<Bookingcontroller>(
-          create: (context) =>
-              Bookingcontroller(context.read<BookingRepository>()),
+          create: (context) => Bookingcontroller(
+            context.read<BookingRepository>(),
+            context.read<AuthController>(),
+            context.read<Calendarcontroller>(),
+          ),
+        ),
+
+        // depends on:
+        // Ptrepository
+        // AuthController
+        // Bookingcontroller
+        ChangeNotifierProvider<PTController>(
+          create: (context) => PTController(
+            context.read<Ptrepository>(),
+            context.read<AuthController>(),
+            context.read<Bookingcontroller>(),
+          )..initController(),
         ),
       ],
       child: MyApp(),
@@ -78,6 +105,7 @@ class _StartSplashState extends State<StartSplash> {
   void initState() {
     super.initState();
     Future.delayed(Duration(milliseconds: 1000), () {
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => WelcomeScreen()),

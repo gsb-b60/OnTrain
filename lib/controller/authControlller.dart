@@ -13,46 +13,57 @@ class AuthController extends ChangeNotifier {
   Authrepo repo;
   AuthController(this.repo);
   ViewState state = ViewState.idle;
-  UserData? user;
+  UserData? _user;
   String? error;
+  UserData? get user => _user;
 
-  Future<Result< void>> signIn(String email, String password) async {
-    return await repo.signIn(email, password);
+
+  Future<Result<void>> signIn(String email, String password) async {
+    if (state != ViewState.loading) {
+      state = ViewState.loading;
+      error = null;
+      notifyListeners();
+    }
+    final result = await repo.signIn(email, password);
+    if (result.isSuccess) {
+      state = ViewState.success;
+    } else {
+      error = result.error?.message;
+      state = ViewState.error;
+    }
+    notifyListeners();
+    return result;
   }
 
-  Future<Result< void>> signUp(
+  Future<Result<void>> signUp(
     String email,
     String password,
     UserRole role,
     String name,
   ) async {
-     return await repo.signUp(email, password, role, name);
+    return await repo.signUp(email, password, role, name);
   }
 
   Future<void> signOut() async {
     await repo.signOut();
   }
 
+  Future<void> getCurrentUserData() async {
+    if (state != ViewState.loading) {
+      state = ViewState.loading;
+      notifyListeners();
+    }
 
+    final result = await repo.getCurrentUser();
 
+    if (result.isSuccess) {
+      _user = result.data;
+      state = ViewState.success;
+    } else {
+      error = result.error!.message;
+      state = ViewState.error;
+    }
 
-Future<void> getCurrentUserData() async {
-
-  if(state != ViewState.loading){
-    state = ViewState.loading;
     notifyListeners();
   }
-
-  final result = await repo.getCurrentUser();
-
-  if (result.isSuccess) {
-    user = result.data;
-    state = ViewState.success;
-  } else {
-    error = result.error!.message;
-    state = ViewState.error;
-  }
-
-  notifyListeners();
-}
 }

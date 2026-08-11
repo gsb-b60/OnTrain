@@ -34,14 +34,14 @@ class _SignInScreenState extends State<SignInScreen> {
     }
 
     final result = await context.read<AuthController>().signIn(email, password);
+    if (!mounted) {
+      return;
+    }
 
     if (result.isError) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(result.error!.message)));
-      print(
-        'Đăng nhập thất bại: ${result.error!.message} code ${result.error!.code}',
-      );
       return;
     } else {
       ScaffoldMessenger.of(

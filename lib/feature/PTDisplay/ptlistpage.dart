@@ -8,7 +8,11 @@ import 'package:ontrain/feature/book/ptcvpage.dart';
 import 'package:provider/provider.dart';
 
 class PTListpage extends StatefulWidget {
-  const PTListpage({super.key});
+  const PTListpage({super.key, this.initialSpecialty});
+
+  /// When set (e.g. tapped from the Specialties screen), the PT list is
+  /// pre-filtered to this specialty on load.
+  final String? initialSpecialty;
 
   @override
   State<PTListpage> createState() => _PTListpageState();
@@ -19,7 +23,11 @@ class _PTListpageState extends State<PTListpage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PTController>().getPTs();
+      final controller = context.read<PTController>();
+      controller.getPTs();
+      if (widget.initialSpecialty != null) {
+        controller.filterBySpecialty(widget.initialSpecialty);
+      }
     });
   }
 
@@ -35,7 +43,7 @@ class _PTListpageState extends State<PTListpage> {
               children: [
                 Stack(
                   children: [
-                    Container(
+                    SizedBox(
                       height: 65,
                       child: Center(
                         child: Text(
@@ -64,29 +72,99 @@ class _PTListpageState extends State<PTListpage> {
                     ),
                   ],
                 ),
-                Container(
-                  decoration: BoxDecoration(),
-                  margin: EdgeInsets.symmetric(horizontal: 35, vertical: 15),
-                  child: TextField(
-                    onChanged: (value) =>
-                        context.read<PTController>().filterByName(value),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: AppColors.light,
-                      hint: Text(
-                        "Seach ....",
-                        style: TextStyle(
-                          color: AppColors.aquaTeal,
-                          fontSize: AppSizes.medium,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(),
+                        margin: EdgeInsets.only(
+                          left: 35,
+                          right: 8,
+                          bottom: 15,
+                        ),
+                        child: TextField(
+                          onChanged: (value) =>
+                              context.read<PTController>().filterByName(value),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: AppColors.light,
+                            hint: Text(
+                              "Seach ....",
+                              style: TextStyle(
+                                color: AppColors.aquaTeal,
+                                fontSize: AppSizes.medium,
+                              ),
+                            ),
+                            // icon: Icon(Icons.search)
+                          ),
                         ),
                       ),
-                      // icon: Icon(Icons.search)
                     ),
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 35),
+                      child: IconButton.filled(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Filterpage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.tune,
+                          color: AppColors.aquaTeal,
+                        ),
+                        tooltip: "Filters",
+                      ),
+                    ),
+                  ],
+                ),
+                // Active specialty chip (shown when arriving from Specialties)
+                Consumer<PTController>(
+                  builder: (context, controller, child) {
+                    final specialty = controller.currentSpecialty;
+                    if (specialty == null) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.only(
+                        left: 35,
+                        right: 35,
+                        bottom: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              "Specialty: $specialty",
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.light,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              controller.filterBySpecialty(null);
+                            },
+                            icon: const Icon(
+                              Icons.close,
+                              size: 18,
+                              color: AppColors.light,
+                            ),
+                            visualDensity: VisualDensity.compact,
+                            tooltip: "Clear specialty filter",
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
