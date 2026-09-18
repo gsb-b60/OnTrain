@@ -86,7 +86,7 @@ class PTCVPage extends StatelessWidget {
                             //   onPressed: () {},
                             //   icon: Icon(Icons.question_mark),
                             // ),
-                            FavoriteIconBtn(pt: pt),
+                            favoriteIconBtn(pt: pt),
                           ],
                         ),
                         Row(
@@ -315,7 +315,10 @@ class PTCVPage extends StatelessWidget {
           Align(
             alignment: Alignment.bottomCenter,
             child: GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context)=>BookingScreen( pt: pt,))),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => BookingScreen(pt: pt)),
+              ),
               child: Container(
                 margin: EdgeInsets.all(12),
                 padding: EdgeInsets.all(12),
@@ -340,4 +343,3 @@ class PTCVPage extends StatelessWidget {
     );
   }
 }
-

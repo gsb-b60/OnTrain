@@ -2,14 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
-import 'package:ontrain/data/datacreator.dart';
-import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/data/object/ptSession.dart';
 import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
 import 'package:ontrain/feature/book/yoursessionpage.dart';
 import 'package:ontrain/feature/profile/profilepage.dart';
 import 'package:ontrain/feature/specialties/specialtiesScreen.dart';
-import 'package:ontrain/model/stateEnum.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -31,8 +28,32 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
+    int currentPageIndex = 0;
     return Scaffold(
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: currentPageIndex,
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        indicatorColor: AppColors.aquaTeal,
+        destinations: const [
+          NavigationDestination(
+            selectedIcon: Icon(Icons.home),
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Badge(child: Icon(Icons.notifications_sharp)),
+            label: 'Notifications',
+          ),
+          NavigationDestination(
+            icon: Badge(label: Text('2'), child: Icon(Icons.messenger_sharp)),
+            label: 'Messages',
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -125,10 +146,7 @@ class _HomePageState extends State<HomePage> {
                       onCall: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PTListpage(),
-                          ),
+                          MaterialPageRoute(builder: (context) => PTListpage()),
                         );
                       },
                     ),

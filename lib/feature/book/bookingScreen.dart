@@ -98,7 +98,7 @@ class _BookingScreenState extends State<BookingScreen> {
                     //   onPressed: () {},
                     //   icon: Icon(Icons.question_mark),
                     // ),
-                    FavoriteIconBtn(pt: widget.pt),
+                    favoriteIconBtn(pt: widget.pt),
                   ],
                 ),
               ],
@@ -365,16 +365,15 @@ class BookingBlock extends StatelessWidget {
         onTap: isBooked
             ? null
             : (onTap ??
-                () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => YourSessionPage(
-                        booking: Booking(startTime: hours),
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            YourSessionPage(booking: Booking(startTime: hours)),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
         child: Container(
           margin: EdgeInsets.all(4),
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
