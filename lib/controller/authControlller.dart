@@ -8,15 +8,16 @@ import 'package:ontrain/model/error.dart';
 import 'package:ontrain/model/result.dart';
 import 'package:ontrain/model/stateEnum.dart';
 import 'package:ontrain/repo/auth/authRepo.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthController extends ChangeNotifier {
-  Authrepo repo;
-  AuthController(this.repo);
+  final Authrepo repo;
+  AuthController({Authrepo? repo, SupabaseClient? supabaseClient})
+      : repo = repo ?? Authrepo(supabaseClient: supabaseClient);
   ViewState state = ViewState.idle;
   UserData? _user;
   String? error;
   UserData? get user => _user;
-
 
   Future<Result<void>> signIn(String email, String password) async {
     if (state != ViewState.loading) {
@@ -39,9 +40,9 @@ class AuthController extends ChangeNotifier {
     String email,
     String password,
     UserRole role,
-    String name,
+    String fullName,
   ) async {
-    return await repo.signUp(email, password, role, name);
+    return await repo.signUp(email, password, role, fullName);
   }
 
   Future<void> signOut() async {

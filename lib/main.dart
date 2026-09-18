@@ -29,15 +29,15 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         // repositories
-        Provider<Authrepo>(create: (_) => Authrepo()),
+        Provider<Authrepo>(create: (_) => Authrepo(supabaseClient: Supabase.instance.client)),
 
-        Provider<Ptrepository>(create: (_) => Ptrepository()),
+        Provider<Ptrepository>(create: (_) => Ptrepository(supabaseClient: Supabase.instance.client)),
 
-        Provider<BookingRepository>(create: (_) => BookingRepository()),
+        Provider<BookingRepository>(create: (_) => BookingRepository(supabaseClient: Supabase.instance.client)),
 
         // base controllers
         ChangeNotifierProvider<AuthController>(
-          create: (context) => AuthController(context.read<Authrepo>()),
+          create: (context) => AuthController(repo: context.read<Authrepo>()),
         ),
 
         ChangeNotifierProvider<Calendarcontroller>(
@@ -50,9 +50,9 @@ Future<void> main() async {
         // Calendarcontroller
         ChangeNotifierProvider<Bookingcontroller>(
           create: (context) => Bookingcontroller(
-            context.read<BookingRepository>(),
-            context.read<AuthController>(),
-            context.read<Calendarcontroller>(),
+            repository: context.read<BookingRepository>(),
+            authController: context.read<AuthController>(),
+            calendarController: context.read<Calendarcontroller>(),
           ),
         ),
 
@@ -62,9 +62,9 @@ Future<void> main() async {
         // Bookingcontroller
         ChangeNotifierProvider<PTController>(
           create: (context) => PTController(
-            context.read<Ptrepository>(),
-            context.read<AuthController>(),
-            context.read<Bookingcontroller>(),
+            repo: context.read<Ptrepository>(),
+            authController: context.read<AuthController>(),
+            bookingController: context.read<Bookingcontroller>(),
           )..initController(),
         ),
       ],

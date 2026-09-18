@@ -1,5 +1,6 @@
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/data/object/user.dart';
+import 'package:ontrain/data/enum/sessionState.dart';
 
 class PTSession {
   final int id;

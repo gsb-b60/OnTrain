@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/data/object/ptSession.dart';
+import 'package:ontrain/data/enum/sessionState.dart';
 
 class SessionDisplayNoti extends ChangeNotifier {
   List<PTSession> sessions = [

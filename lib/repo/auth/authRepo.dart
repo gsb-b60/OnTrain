@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:ontrain/data/enum/userRole.dart';
 import 'package:ontrain/data/object/user.dart';
 import 'package:ontrain/model/error.dart';
@@ -8,17 +6,20 @@ import 'package:ontrain/repo/errorHandle/authErrorHandle.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Authrepo {
-  final SupabaseClient _supabaseClient = Supabase.instance.client;
+  final SupabaseClient _supabaseClient;
+
+  Authrepo({SupabaseClient? supabaseClient})
+      : _supabaseClient = supabaseClient ?? Supabase.instance.client;
 
   Future<Result<User>> signIn(String email, String password) async {
     try {
-      final respone = await _supabaseClient.auth.signInWithPassword(
+      final response = await _supabaseClient.auth.signInWithPassword(
         password: password,
         email: email,
       );
-      if (respone.user == null) {
+      if (response.user == null) {
         return Result.failure(
-          RepoError(message: 'Không tìm thấy người dùngz', code: 500),
+          RepoError(message: 'Không tìm thấy người dùng', code: 500),
         );
       }
       return Result.success(_supabaseClient.auth.currentUser!);
@@ -33,26 +34,29 @@ class Authrepo {
     String email,
     String password,
     UserRole role,
-    String name,
+    String fullName,
   ) async {
     try {
-      final respone = await _supabaseClient.auth.signUp(
+      final response = await _supabaseClient.auth.signUp(
         password: password,
         email: email,
       );
-      if (respone.user == null) {
+      if (response.user == null) {
         return Result.failure(
           RepoError(message: 'Failed to sign up', code: 500),
         );
       }
 
-      await _supabaseClient.from("profile").insert({
-        "id": respone.user!.id,
-        "email": email,
-        "role": role.dbValue,
-        "name": name,
+      await _supabaseClient.from('profiles').insert({
+        'id': response.user!.id,
+        'email': email,
+        'full_name': fullName,
+        'role': role.dbValue,
+        'timezone': 'Asia/Ho_Chi_Minh',
+        'locale': 'vi',
+        'is_verified': false,
       });
-      return Result.success(respone.user);
+      return Result.success(response.user!);
     } catch (e) {
       return Result.failure(AuthErrorHandle.mapError(e));
     }
@@ -61,8 +65,7 @@ class Authrepo {
   Future<Result<String>> signOut() async {
     try {
       await _supabaseClient.auth.signOut();
-
-      return Result.success("signed out ");
+      return Result.success('signed out');
     } catch (e) {
       return Result.failure(
         RepoError(message: 'Failed to sign out', code: 500),
@@ -84,7 +87,7 @@ class Authrepo {
         );
       }
       final userData = await _supabaseClient
-          .from("profile")
+          .from('profiles')
           .select()
           .eq('id', user.id)
           .single();

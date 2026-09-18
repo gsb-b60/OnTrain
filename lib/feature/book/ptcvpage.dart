@@ -122,10 +122,10 @@ class PTCVPage extends StatelessWidget {
                                   //   "IFBBQ natural",
                                   //   style: TextStyle(color: AppColors.light),
                                   // ),
-                                  Text(
-                                    pt.phoneNumber,
-                                    style: TextStyle(color: AppColors.light),
-                                  ),
+Text(
+  pt.phoneNumber ?? '',
+  style: TextStyle(color: AppColors.light),
+),
                                   Row(
                                     children: [
                                       // Container(

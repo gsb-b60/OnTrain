@@ -307,9 +307,9 @@ class _PTListpageState extends State<PTListpage> {
                                                 fontSize: AppSizes.medium,
                                               ),
                                             ),
-                                            Text(
-                                              ptController.pts[index].phoneNumber,
-                                            ),
+Text(
+  ptController.pts[index].phoneNumber ?? '',
+),
                                           ],
                                         ),
                                             Spacer(),
