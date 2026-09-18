@@ -1,10 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ontrain/data/object/booking.dart';
 import 'package:ontrain/data/object/payment.dart';
+import 'package:ontrain/data/object/payout.dart';
+import 'package:ontrain/data/object/pt_earnings.dart';
 import 'package:ontrain/data/object/service_package.dart';
 import 'package:ontrain/data/object/time_slot.dart';
 import 'package:ontrain/data/enum/bookingStatus.dart';
+import 'package:ontrain/data/enum/earningsStatus.dart';
 import 'package:ontrain/data/enum/paymentStatus.dart';
+import 'package:ontrain/data/enum/payoutStatus.dart';
 
 Booking _testBooking({
   String id = 'booking-1',
@@ -42,6 +46,42 @@ Payment _testPayment({
     paymentMethod: 'stripe',
     status: status,
     externalPaymentId: 'simulated_pi_123',
+  );
+}
+
+PTEarnings _testEarnings({
+  String id = 'earnings-1',
+  EarningsStatus status = EarningsStatus.released,
+  String bookingId = 'booking-1',
+}) {
+  return PTEarnings(
+    id: id,
+    ptId: 'pt-1',
+    bookingId: bookingId,
+    paymentId: 'payment-1',
+    amountCents: 100000,
+    platformCommissionPercent: 15,
+    platformCommissionFixedCents: 0,
+    platformCommissionCents: 15000,
+    netAmountCents: 85000,
+    status: status,
+    createdAt: DateTime.now(),
+  );
+}
+
+Payout _testPayout({
+  String id = 'payout-1',
+  PayoutStatus status = PayoutStatus.requested,
+}) {
+  return Payout(
+    id: id,
+    ptId: 'pt-1',
+    amountCents: 50000,
+    status: status,
+    bankAccountName: 'Test PT',
+    bankAccountNumber: '123456789',
+    bankName: 'Test Bank',
+    bankBranch: 'Main Branch',
   );
 }
 
@@ -266,6 +306,114 @@ void main() {
       expect(map.containsKey('refunded_at'), isFalse);
       expect(map['booking_id'], 'booking-1');
       expect(map['status'], 'held');
+    });
+
+    test('PTEarnings.fromMap parses all status strings correctly', () {
+      for (final status in EarningsStatus.values) {
+        final map = {
+          'id': 'test',
+          'pt_id': 'pt-1',
+          'booking_id': 'booking-1',
+          'payment_id': 'payment-1',
+          'gross_amount_cents': 100000,
+          'platform_commission_percent': 15,
+          'platform_commission_fixed_cents': 0,
+          'platform_commission_cents': 15000,
+          'net_amount_cents': 85000,
+          'status': status.dbValue,
+          'created_at': DateTime.now().toIso8601String(),
+        };
+        final earning = PTEarnings.fromMap(map);
+        expect(earning.status, status);
+      }
+    });
+
+    test('PTEarnings.fromMap parses correctly with all fields', () {
+      final now = DateTime.now().toIso8601String();
+      final map = {
+        'id': 'earnings-1',
+        'pt_id': 'pt-1',
+        'booking_id': 'booking-1',
+        'payment_id': 'payment-1',
+        'gross_amount_cents': 300000,
+        'platform_commission_percent': 15,
+        'platform_commission_fixed_cents': 0,
+        'platform_commission_cents': 45000,
+        'net_amount_cents': 255000,
+        'status': 'released',
+        'created_at': now,
+        'released_at': now,
+        'paid_out_at': now,
+      };
+      final earning = PTEarnings.fromMap(map);
+      expect(earning.id, 'earnings-1');
+      expect(earning.amountCents, 300000);
+      expect(earning.platformCommissionCents, 45000);
+      expect(earning.netAmountCents, 255000);
+      expect(earning.status, EarningsStatus.released);
+    });
+
+    test('PTEarnings.toInsertMap excludes id and timestamps', () {
+      final earning = _testEarnings();
+      final map = earning.toInsertMap();
+      expect(map.containsKey('id'), isFalse);
+      expect(map.containsKey('created_at'), isFalse);
+      expect(map.containsKey('released_at'), isFalse);
+      expect(map.containsKey('paid_out_at'), isFalse);
+      expect(map['pt_id'], 'pt-1');
+      expect(map['status'], 'released');
+    });
+
+    test('Payout.fromMap parses all status strings correctly', () {
+      for (final status in PayoutStatus.values) {
+        final map = {
+          'id': 'test',
+          'pt_id': 'pt-1',
+          'amount_cents': 50000,
+          'status': status.dbValue,
+          'bank_account_name': 'Test PT',
+          'bank_account_number': '123456789',
+          'bank_name': 'Test Bank',
+          'bank_branch': 'Main Branch',
+          'requested_at': DateTime.now().toIso8601String(),
+        };
+        final payout = Payout.fromMap(map);
+        expect(payout.status, status);
+      }
+    });
+
+    test('Payout.fromMap parses correctly with all fields', () {
+      final now = DateTime.now().toIso8601String();
+      final map = {
+        'id': 'payout-1',
+        'pt_id': 'pt-1',
+        'amount_cents': 100000,
+        'status': 'completed',
+        'bank_account_name': 'Test PT',
+        'bank_account_number': '123456789',
+        'bank_name': 'Test Bank',
+        'bank_branch': 'Main Branch',
+        'requested_at': now,
+        'processed_at': now,
+        'failure_reason': null,
+      };
+      final payout = Payout.fromMap(map);
+      expect(payout.id, 'payout-1');
+      expect(payout.amountCents, 100000);
+      expect(payout.status, PayoutStatus.completed);
+      expect(payout.bankAccountName, 'Test PT');
+      expect(payout.bankAccountNumber, '123456789');
+      expect(payout.bankName, 'Test Bank');
+    });
+
+    test('Payout.toInsertMap excludes id and timestamps', () {
+      final payout = _testPayout();
+      final map = payout.toInsertMap();
+      expect(map.containsKey('id'), isFalse);
+      expect(map.containsKey('requested_at'), isFalse);
+      expect(map.containsKey('processed_at'), isFalse);
+      expect(map['pt_id'], 'pt-1');
+      expect(map['status'], 'requested');
     });
   });
 }

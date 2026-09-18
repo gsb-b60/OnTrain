@@ -6,6 +6,7 @@ import 'package:ontrain/controller/bookingController.dart';
 import 'package:ontrain/controller/calendarController.dart';
 import 'package:ontrain/controller/paymentController.dart';
 import 'package:ontrain/controller/ptController.dart';
+import 'package:ontrain/controller/ptEarningsController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/feature/auth/authGate.dart';
@@ -14,7 +15,9 @@ import 'package:ontrain/feature/auth/welcomeScreeen.dart';
 import 'package:ontrain/feature/auth/splashScreen.dart';
 import 'package:ontrain/repo/auth/authRepo.dart';
 import 'package:ontrain/repo/bookingRepository.dart';
+import 'package:ontrain/repo/earningsRepository.dart';
 import 'package:ontrain/repo/paymentRepository.dart';
+import 'package:ontrain/repo/payoutRepository.dart';
 import 'package:ontrain/repo/ptRepository.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -39,6 +42,10 @@ Future<void> main() async {
 
         Provider<PaymentRepository>(create: (_) => PaymentRepository(supabaseClient: Supabase.instance.client)),
 
+        Provider<EarningsRepository>(create: (_) => EarningsRepository(supabaseClient: Supabase.instance.client)),
+
+        Provider<PayoutRepository>(create: (_) => PayoutRepository(supabaseClient: Supabase.instance.client)),
+
         // base controllers
         ChangeNotifierProvider<AuthController>(
           create: (context) => AuthController(repo: context.read<Authrepo>()),
@@ -46,6 +53,16 @@ Future<void> main() async {
 
         ChangeNotifierProvider<Calendarcontroller>(
           create: (_) => Calendarcontroller(),
+        ),
+
+        // depends on:
+        // PaymentRepository
+        // AuthController
+        ChangeNotifierProvider<Paymentcontroller>(
+          create: (context) => Paymentcontroller(
+            repository: context.read<PaymentRepository>(),
+            authController: context.read<AuthController>(),
+          ),
         ),
 
         // depends on:
@@ -63,11 +80,13 @@ Future<void> main() async {
         ),
 
         // depends on:
-        // PaymentRepository
+        // EarningsRepository
+        // PayoutRepository
         // AuthController
-        ChangeNotifierProvider<Paymentcontroller>(
-          create: (context) => Paymentcontroller(
-            repository: context.read<PaymentRepository>(),
+        ChangeNotifierProvider<PTEarningsController>(
+          create: (context) => PTEarningsController(
+            earningsRepository: context.read<EarningsRepository>(),
+            payoutRepository: context.read<PayoutRepository>(),
             authController: context.read<AuthController>(),
           ),
         ),
