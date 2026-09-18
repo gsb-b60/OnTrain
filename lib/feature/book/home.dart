@@ -46,7 +46,7 @@ class _HomeScaffState extends State<HomeScaff> {
       body: <Widget>[
         HomePage(),
         SessionPage(),
-        ProfilePage(),
+        ProfilePage(isMainScreen: true),
       ][currentPageIndex],
     );
   }
