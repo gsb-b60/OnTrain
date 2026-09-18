@@ -1,8 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ontrain/data/object/booking.dart';
+import 'package:ontrain/data/object/payment.dart';
 import 'package:ontrain/data/object/service_package.dart';
 import 'package:ontrain/data/object/time_slot.dart';
 import 'package:ontrain/data/enum/bookingStatus.dart';
+import 'package:ontrain/data/enum/paymentStatus.dart';
 
 Booking _testBooking({
   String id = 'booking-1',
@@ -22,6 +24,24 @@ Booking _testBooking({
     platformCommissionFixedCents: 0,
     ptEarningsCents: 85000,
     status: status,
+  );
+}
+
+Payment _testPayment({
+  String id = 'payment-1',
+  PaymentStatus status = PaymentStatus.held,
+  String bookingId = 'booking-1',
+}) {
+  return Payment(
+    id: id,
+    bookingId: bookingId,
+    clientId: 'client-1',
+    amountCents: 100000,
+    platformCommissionCents: 15000,
+    ptAmountCents: 85000,
+    paymentMethod: 'stripe',
+    status: status,
+    externalPaymentId: 'simulated_pi_123',
   );
 }
 
@@ -194,6 +214,58 @@ void main() {
       expect(slot.id, 'slot-1');
       expect(slot.durationMinutes, 60);
       expect(slot.isAvailable, isTrue);
+    });
+
+    test('Payment.fromMap parses all status strings correctly', () {
+      for (final status in PaymentStatus.values) {
+        final map = {
+          'id': 'test',
+          'booking_id': 'booking-1',
+          'client_id': 'client-1',
+          'amount_cents': 100000,
+          'platform_commission_cents': 15000,
+          'pt_amount_cents': 85000,
+          'payment_method': 'stripe',
+          'status': status.dbValue,
+          'external_payment_id': 'pi_test',
+        };
+        final payment = Payment.fromMap(map);
+        expect(payment.status, status);
+      }
+    });
+
+    test('Payment.fromMap parses correctly with all fields', () {
+      final map = {
+        'id': 'payment-1',
+        'booking_id': 'booking-1',
+        'client_id': 'client-1',
+        'amount_cents': 300000,
+        'platform_commission_cents': 45000,
+        'pt_amount_cents': 255000,
+        'payment_method': 'stripe',
+        'status': 'held',
+        'external_payment_id': 'pi_abc123',
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      final payment = Payment.fromMap(map);
+      expect(payment.id, 'payment-1');
+      expect(payment.amountCents, 300000);
+      expect(payment.platformCommissionCents, 45000);
+      expect(payment.ptAmountCents, 255000);
+      expect(payment.status, PaymentStatus.held);
+    });
+
+    test('Payment.toInsertMap excludes id and timestamps', () {
+      final payment = _testPayment();
+      final map = payment.toInsertMap();
+      expect(map.containsKey('id'), isFalse);
+      expect(map.containsKey('created_at'), isFalse);
+      expect(map.containsKey('updated_at'), isFalse);
+      expect(map.containsKey('released_at'), isFalse);
+      expect(map.containsKey('refunded_at'), isFalse);
+      expect(map['booking_id'], 'booking-1');
+      expect(map['status'], 'held');
     });
   });
 }
