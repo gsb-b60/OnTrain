@@ -7,7 +7,8 @@ import 'package:ontrain/feature/profile/updateprofilepage.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  final bool isMainScreen;
+  const ProfilePage({super.key, required this.isMainScreen});
 
   @override
   Widget build(BuildContext context) {
