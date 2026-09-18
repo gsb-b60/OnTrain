@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/controller/bookingController.dart';
 import 'package:ontrain/controller/calendarController.dart';
+import 'package:ontrain/controller/paymentController.dart';
 import 'package:ontrain/controller/ptController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
@@ -13,6 +14,7 @@ import 'package:ontrain/feature/auth/welcomeScreeen.dart';
 import 'package:ontrain/feature/auth/splashScreen.dart';
 import 'package:ontrain/repo/auth/authRepo.dart';
 import 'package:ontrain/repo/bookingRepository.dart';
+import 'package:ontrain/repo/paymentRepository.dart';
 import 'package:ontrain/repo/ptRepository.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -35,6 +37,8 @@ Future<void> main() async {
 
         Provider<BookingRepository>(create: (_) => BookingRepository(supabaseClient: Supabase.instance.client)),
 
+        Provider<PaymentRepository>(create: (_) => PaymentRepository(supabaseClient: Supabase.instance.client)),
+
         // base controllers
         ChangeNotifierProvider<AuthController>(
           create: (context) => AuthController(repo: context.read<Authrepo>()),
@@ -48,11 +52,23 @@ Future<void> main() async {
         // BookingRepository
         // AuthController
         // Calendarcontroller
+        // PaymentController
         ChangeNotifierProvider<Bookingcontroller>(
           create: (context) => Bookingcontroller(
             repository: context.read<BookingRepository>(),
             authController: context.read<AuthController>(),
             calendarController: context.read<Calendarcontroller>(),
+            paymentController: context.read<Paymentcontroller>(),
+          ),
+        ),
+
+        // depends on:
+        // PaymentRepository
+        // AuthController
+        ChangeNotifierProvider<Paymentcontroller>(
+          create: (context) => Paymentcontroller(
+            repository: context.read<PaymentRepository>(),
+            authController: context.read<AuthController>(),
           ),
         ),
 
@@ -104,7 +120,7 @@ class _StartSplashState extends State<StartSplash> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 1000), () {
+    Future.delayed(const Duration(milliseconds: 1000), () {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
