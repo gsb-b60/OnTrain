@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/controller/calendarController.dart';
+import 'package:ontrain/controller/paymentController.dart';
 import 'package:ontrain/data/object/booking.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/data/object/service_package.dart';
@@ -14,11 +15,13 @@ class Bookingcontroller extends ChangeNotifier {
   final BookingRepository repository;
   final AuthController authController;
   final Calendarcontroller calendarController;
+  final Paymentcontroller paymentController;
 
   Bookingcontroller({
     required this.repository,
     required this.authController,
     required this.calendarController,
+    required this.paymentController,
   });
 
   List<Booking> _bookings = [];
@@ -166,8 +169,9 @@ class Bookingcontroller extends ChangeNotifier {
     final priceCents = pkg.priceCents;
     const platformCommissionPercent = 15.0;
     const platformCommissionFixedCents = 0;
-    final ptEarningsCents =
-        priceCents - (priceCents * platformCommissionPercent / 100).round() - platformCommissionFixedCents;
+    final platformCommissionCents =
+        (priceCents * platformCommissionPercent / 100).round() + platformCommissionFixedCents;
+    final ptEarningsCents = priceCents - platformCommissionCents;
 
     _state = ViewState.loading;
     _error = null;
@@ -187,10 +191,20 @@ class Bookingcontroller extends ChangeNotifier {
     ));
 
     if (result.isSuccess) {
+      final booking = result.data!;
+
+      // Create held payment record
+      await paymentController.createPaymentForBooking(
+        bookingId: booking.id!,
+        amountCents: priceCents,
+        platformCommissionCents: platformCommissionCents,
+        ptAmountCents: ptEarningsCents,
+      );
+
       _state = ViewState.success;
       _slotsForDate = _slotsForDate.map((s) {
         if (s.id == slotId) {
-          return s.copyWith(isBooked: true, bookingId: result.data!.id);
+          return s.copyWith(isBooked: true, bookingId: booking.id);
         }
         return s;
       }).toList();
