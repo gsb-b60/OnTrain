@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrain/controller/authControlller.dart';
-import 'package:ontrain/core/constrants/app_colors.dart';
+import 'package:ontrain/controller/notificationController.dart';
+import 'package:ontrain/core/constrants/app_colors.dart'
 import 'package:ontrain/data/object/ptSession.dart';
 import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
 import 'package:ontrain/feature/book/sessiondisplay/sessionpage.dart';
@@ -26,6 +27,8 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AuthController>().getCurrentUserData();
+      context.read<NotificationController>().fetchNotifications();
+      context.read<NotificationController>().fetchUnreadCount();
     });
   }
 
@@ -39,36 +42,51 @@ class _HomePageState extends State<HomePage> {
     ];
 
     return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: currentPageIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
+      bottomNavigationBar: Consumer<NotificationController>(
+        builder: (context, notificationController, child) {
+          return NavigationBar(
+            selectedIndex: currentPageIndex,
+            onDestinationSelected: (int index) {
+              setState(() {
+                currentPageIndex = index;
+              });
+            },
+            indicatorColor: AppColors.aquaTeal,
+            destinations: [
+              const NavigationDestination(
+                selectedIcon: Icon(Icons.home),
+                icon: Icon(Icons.home_outlined),
+                label: 'Home',
+              ),
+              const NavigationDestination(
+                selectedIcon: Icon(Icons.person_search),
+                icon: Icon(Icons.person_search_outlined),
+                label: 'Find PT',
+              ),
+              NavigationDestination(
+                selectedIcon: Badge(
+                  isLabelVisible: false, // we handle visibility manually
+                  child: Icon(Icons.calendar_month),
+                ),
+                icon: Badge(
+                  label: Text(
+                    notificationController.unreadCount > 9
+                        ? '9+'
+                        : notificationController.unreadCount.toString(),
+                  ),
+                  isLabelVisible: notificationController.unreadCount > 0,
+                  child: const Icon(Icons.calendar_month_outlined),
+                ),
+                label: 'Sessions',
+              ),
+              const NavigationDestination(
+                selectedIcon: Icon(Icons.person),
+                icon: Icon(Icons.person_outline),
+                label: 'Profile',
+              ),
+            ],
+          );
         },
-        indicatorColor: AppColors.aquaTeal,
-        destinations: const [
-          NavigationDestination(
-            selectedIcon: Icon(Icons.home),
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.person_search),
-            icon: Icon(Icons.person_search_outlined),
-            label: 'Find PT',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.calendar_month),
-            icon: Icon(Icons.calendar_month_outlined),
-            label: 'Sessions',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.person),
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
-          ),
-        ],
       ),
       body: IndexedStack(index: currentPageIndex, children: pages),
     );

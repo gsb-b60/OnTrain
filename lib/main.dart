@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/controller/bookingController.dart';
-import 'package:ontrain/controller/calendarController.dart';
+import 'package:ontrain/controller/calendarController.dart'
+import 'package:ontrain/controller/notificationController.dart';
 import 'package:ontrain/controller/paymentController.dart';
 import 'package:ontrain/controller/ptController.dart';
 import 'package:ontrain/controller/ptEarningsController.dart';
+import 'package:ontrain/controller/reviewController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/feature/auth/authGate.dart';
@@ -16,9 +18,11 @@ import 'package:ontrain/feature/auth/splashScreen.dart';
 import 'package:ontrain/repo/auth/authRepo.dart';
 import 'package:ontrain/repo/bookingRepository.dart';
 import 'package:ontrain/repo/earningsRepository.dart';
+import 'package:ontrain/repo/notificationRepository.dart';
 import 'package:ontrain/repo/paymentRepository.dart';
 import 'package:ontrain/repo/payoutRepository.dart';
 import 'package:ontrain/repo/ptRepository.dart';
+import 'package:ontrain/repo/reviewRepository.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -45,6 +49,10 @@ Future<void> main() async {
         Provider<EarningsRepository>(create: (_) => EarningsRepository(supabaseClient: Supabase.instance.client)),
 
         Provider<PayoutRepository>(create: (_) => PayoutRepository(supabaseClient: Supabase.instance.client)),
+
+        Provider<NotificationRepository>(create: (_) => NotificationRepository(supabaseClient: Supabase.instance.client)),
+
+        Provider<ReviewRepository>(create: (_) => ReviewRepository(supabaseClient: Supabase.instance.client)),
 
         // base controllers
         ChangeNotifierProvider<AuthController>(
@@ -87,6 +95,26 @@ Future<void> main() async {
           create: (context) => PTEarningsController(
             earningsRepository: context.read<EarningsRepository>(),
             payoutRepository: context.read<PayoutRepository>(),
+            authController: context.read<AuthController>(),
+          ),
+        ),
+
+        // depends on:
+        // NotificationRepository
+        // AuthController
+        ChangeNotifierProvider<NotificationController>(
+          create: (context) => NotificationController(
+            repository: context.read<NotificationRepository>(),
+            authController: context.read<AuthController>(),
+          ),
+        ),
+
+        // depends on:
+        // ReviewRepository
+        // AuthController
+        ChangeNotifierProvider<ReviewController>(
+          create: (context) => ReviewController(
+            repository: context.read<ReviewRepository>(),
             authController: context.read<AuthController>(),
           ),
         ),

@@ -25,8 +25,8 @@ class PT {
   final DateTime? reviewedAt;
   final String? reviewedBy;
   final String? rejectionReason;
-  final double avgRating;
-  final int totalReviews;
+  final double? ratingAvg;
+  final int? ratingCount;
   final int totalSessionsCompleted;
   final bool autoAcceptBookings;
   final int bookingLeadTimeHours;
@@ -71,8 +71,8 @@ class PT {
     this.reviewedAt,
     this.reviewedBy,
     this.rejectionReason,
-    required this.avgRating,
-    required this.totalReviews,
+    this.ratingAvg,
+    this.ratingCount,
     required this.totalSessionsCompleted,
     required this.autoAcceptBookings,
     required this.bookingLeadTimeHours,
@@ -120,8 +120,8 @@ class PT {
           : null,
       reviewedBy: map['reviewed_by'] as String?,
       rejectionReason: map['rejection_reason'] as String?,
-      avgRating: (map['avg_rating'] as num?)?.toDouble() ?? 0.0,
-      totalReviews: map['total_reviews'] as int? ?? 0,
+      ratingAvg: (map['avg_rating'] as num?)?.toDouble(),
+      ratingCount: map['total_reviews'] as int?,
       totalSessionsCompleted: map['total_sessions_completed'] as int? ?? 0,
       autoAcceptBookings: map['auto_accept_bookings'] as bool? ?? false,
       bookingLeadTimeHours: map['booking_lead_time_hours'] as int? ?? 2,
@@ -166,8 +166,8 @@ class PT {
       'reviewed_at': reviewedAt?.toIso8601String(),
       'reviewed_by': reviewedBy,
       'rejection_reason': rejectionReason,
-      'avg_rating': avgRating,
-      'total_reviews': totalReviews,
+      'avg_rating': ratingAvg,
+      'total_reviews': ratingCount,
       'total_sessions_completed': totalSessionsCompleted,
       'auto_accept_bookings': autoAcceptBookings,
       'booking_lead_time_hours': bookingLeadTimeHours,
@@ -225,8 +225,8 @@ class PT {
     DateTime? reviewedAt,
     String? reviewedBy,
     String? rejectionReason,
-    double? avgRating,
-    int? totalReviews,
+    double? ratingAvg,
+    int? ratingCount,
     int? totalSessionsCompleted,
     bool? autoAcceptBookings,
     int? bookingLeadTimeHours,
@@ -268,8 +268,8 @@ class PT {
       reviewedAt: reviewedAt ?? this.reviewedAt,
       reviewedBy: reviewedBy ?? this.reviewedBy,
       rejectionReason: rejectionReason ?? this.rejectionReason,
-      avgRating: avgRating ?? this.avgRating,
-      totalReviews: totalReviews ?? this.totalReviews,
+      ratingAvg: ratingAvg ?? this.ratingAvg,
+      ratingCount: ratingCount ?? this.ratingCount,
       totalSessionsCompleted: totalSessionsCompleted ?? this.totalSessionsCompleted,
       autoAcceptBookings: autoAcceptBookings ?? this.autoAcceptBookings,
       bookingLeadTimeHours: bookingLeadTimeHours ?? this.bookingLeadTimeHours,
@@ -296,8 +296,8 @@ class PT {
         'headline: $headline, '
         'city: $city, '
         'status: ${status.dbValue}, '
-        'avgRating: $avgRating, '
-        'totalReviews: $totalReviews, '
+        'avgRating: $ratingAvg, '
+        'ratingCount: $ratingCount, '
         'isFavorite: $isFavorite'
         ')';
   }
@@ -306,4 +306,6 @@ class PT {
   String get name => fullName;
   String? get phoneNumber => phone;
   String? get notes => bio;
+  double get avgRating => ratingAvg ?? 0.0;
+  int get totalReviews => ratingCount ?? 0;
 }

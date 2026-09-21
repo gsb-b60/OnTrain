@@ -2,9 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ontrain/core/cancellation_policy.dart';
 import 'package:ontrain/data/object/booking.dart';
 import 'package:ontrain/data/object/dispute.dart';
+import 'package:ontrain/data/object/notification.dart';
 import 'package:ontrain/data/object/payment.dart';
 import 'package:ontrain/data/object/payout.dart';
 import 'package:ontrain/data/object/pt_earnings.dart';
+import 'package:ontrain/data/object/review.dart';
 import 'package:ontrain/data/object/service_package.dart';
 import 'package:ontrain/data/object/time_slot.dart';
 import 'package:ontrain/data/enum/bookingStatus.dart';
@@ -100,6 +102,38 @@ Dispute _testDispute({
     againstUserId: 'pt-1',
     reason: 'Test dispute',
     status: status,
+  );
+}
+
+Notification _testNotification({
+  String id = 'notif-1',
+  String type = 'booking_created',
+  bool isRead = false,
+}) {
+  return Notification(
+    id: id,
+    userId: 'user-1',
+    type: type,
+    title: 'Test Notification',
+    body: 'Test body',
+    data: {'booking_id': 'booking-1'},
+    isRead: isRead,
+    createdAt: DateTime.now(),
+  );
+}
+
+Review _testReview({
+  String id = 'review-1',
+  int rating = 5,
+}) {
+  return Review(
+    id: id,
+    bookingId: 'booking-1',
+    clientId: 'client-1',
+    ptId: 'pt-1',
+    rating: rating,
+    comment: 'Great session!',
+    createdAt: DateTime.now(),
   );
 }
 
@@ -629,6 +663,102 @@ void main() {
       expect(map.containsKey('resolved_at'), isFalse);
       expect(map['booking_id'], 'booking-1');
       expect(map['status'], 'open');
+    });
+
+    test('Notification.fromMap parses correctly with all fields', () {
+      final now = DateTime.now().toIso8601String();
+      final map = {
+        'id': 'notif-1',
+        'user_id': 'user-1',
+        'type': 'booking_created',
+        'title': 'Booking Created',
+        'body': 'Your booking was created',
+        'data': {'booking_id': 'booking-1'},
+        'is_read': false,
+        'created_at': now,
+      };
+      final notification = Notification.fromMap(map);
+      expect(notification.id, 'notif-1');
+      expect(notification.userId, 'user-1');
+      expect(notification.type, 'booking_created');
+      expect(notification.title, 'Booking Created');
+      expect(notification.body, 'Your booking was created');
+      expect(notification.data, {'booking_id': 'booking-1'});
+      expect(notification.isRead, isFalse);
+    });
+
+    test('Notification.fromMap handles missing data field', () {
+      final map = {
+        'id': 'notif-1',
+        'user_id': 'user-1',
+        'type': 'booking_created',
+        'title': 'Booking Created',
+        'body': 'Your booking was created',
+        'is_read': true,
+        'created_at': DateTime.now().toIso8601String(),
+      };
+      final notification = Notification.fromMap(map);
+      expect(notification.data, isNull);
+      expect(notification.isRead, isTrue);
+    });
+
+    test('Notification.copyWith updates fields', () {
+      final notification = _testNotification();
+      final updated = notification.copyWith(isRead: true, title: 'Updated');
+      expect(updated.isRead, isTrue);
+      expect(updated.title, 'Updated');
+      expect(updated.id, notification.id);
+    });
+
+    test('Review.fromMap parses correctly with all fields', () {
+      final now = DateTime.now().toIso8601String();
+      final map = {
+        'id': 'review-1',
+        'booking_id': 'booking-1',
+        'client_id': 'client-1',
+        'pt_id': 'pt-1',
+        'rating': 5,
+        'comment': 'Excellent!',
+        'created_at': now,
+      };
+      final review = Review.fromMap(map);
+      expect(review.id, 'review-1');
+      expect(review.bookingId, 'booking-1');
+      expect(review.clientId, 'client-1');
+      expect(review.ptId, 'pt-1');
+      expect(review.rating, 5);
+      expect(review.comment, 'Excellent!');
+    });
+
+    test('Review.fromMap handles missing comment', () {
+      final map = {
+        'id': 'review-1',
+        'booking_id': 'booking-1',
+        'client_id': 'client-1',
+        'pt_id': 'pt-1',
+        'rating': 4,
+        'created_at': DateTime.now().toIso8601String(),
+      };
+      final review = Review.fromMap(map);
+      expect(review.comment, isNull);
+      expect(review.rating, 4);
+    });
+
+    test('Review.toInsertMap excludes id and timestamps', () {
+      final review = _testReview();
+      final map = review.toInsertMap();
+      expect(map.containsKey('id'), isFalse);
+      expect(map.containsKey('created_at'), isFalse);
+      expect(map['booking_id'], 'booking-1');
+      expect(map['rating'], 5);
+    });
+
+    test('Review.copyWith updates fields', () {
+      final review = _testReview(rating: 3);
+      final updated = review.copyWith(rating: 5, comment: 'Updated');
+      expect(updated.rating, 5);
+      expect(updated.comment, 'Updated');
+      expect(updated.id, review.id);
     });
   });
 }
