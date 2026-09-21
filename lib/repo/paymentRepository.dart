@@ -1,4 +1,5 @@
 import 'package:ontrain/data/object/payment.dart';
+import 'package:ontrain/data/enum/paymentStatus.dart';
 import 'package:ontrain/model/error.dart';
 import 'package:ontrain/model/result.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

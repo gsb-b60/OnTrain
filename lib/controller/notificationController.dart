@@ -1,6 +1,6 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart' hide Notification;
 import 'package:ontrain/controller/authControlller.dart';
-import 'package:ontrain/data/object/notification.dart';
+import 'package:ontrain/data/object/notification.dart' as ontrain_notification;
 import 'package:ontrain/model/stateEnum.dart';
 import 'package:ontrain/repo/notificationRepository.dart';
 
@@ -13,8 +13,8 @@ class NotificationController extends ChangeNotifier {
     required this.authController,
   });
 
-  List<Notification> _notifications = [];
-  List<Notification> get notifications => _notifications;
+  List<ontrain_notification.Notification> _notifications = [];
+  List<ontrain_notification.Notification> get notifications => _notifications;
 
   int _unreadCount = 0;
   int get unreadCount => _unreadCount;
@@ -85,7 +85,7 @@ class NotificationController extends ChangeNotifier {
     }
   }
 
-  void onNotificationReceived(Notification notification) {
+  void onNotificationReceived(ontrain_notification.Notification notification) {
     _notifications.insert(0, notification);
     if (!notification.isRead) {
       _unreadCount++;

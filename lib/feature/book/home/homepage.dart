@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/controller/notificationController.dart';
-import 'package:ontrain/core/constrants/app_colors.dart'
+import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/ptSession.dart';
 import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
 import 'package:ontrain/feature/book/sessiondisplay/sessionpage.dart';

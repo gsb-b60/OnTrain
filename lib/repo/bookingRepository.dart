@@ -6,6 +6,7 @@ import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/data/object/service_package.dart';
 import 'package:ontrain/data/object/time_slot.dart';
 import 'package:ontrain/data/object/user.dart';
+import 'package:ontrain/data/enum/disputeStatus.dart';
 import 'package:ontrain/model/error.dart';
 import 'package:ontrain/model/result.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

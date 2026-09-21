@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/controller/bookingController.dart';
-import 'package:ontrain/controller/calendarController.dart'
+import 'package:ontrain/controller/calendarController.dart';
 import 'package:ontrain/controller/notificationController.dart';
 import 'package:ontrain/controller/paymentController.dart';
 import 'package:ontrain/controller/ptController.dart';

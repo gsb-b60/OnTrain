@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/data/object/payment.dart';
+import 'package:ontrain/data/enum/paymentStatus.dart';
 import 'package:ontrain/model/stateEnum.dart';
 import 'package:ontrain/repo/paymentRepository.dart';
 

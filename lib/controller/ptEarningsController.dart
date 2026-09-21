@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/data/object/payout.dart';
 import 'package:ontrain/data/object/pt_earnings.dart';
+import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/model/stateEnum.dart';
 import 'package:ontrain/repo/earningsRepository.dart';
 import 'package:ontrain/repo/payoutRepository.dart';
