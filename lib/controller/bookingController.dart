@@ -2,11 +2,14 @@ import 'package:flutter/widgets.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/controller/calendarController.dart';
 import 'package:ontrain/controller/paymentController.dart';
+import 'package:ontrain/core/cancellation_policy.dart';
 import 'package:ontrain/data/object/booking.dart';
+import 'package:ontrain/data/object/dispute.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/data/object/service_package.dart';
 import 'package:ontrain/data/object/time_slot.dart';
 import 'package:ontrain/data/enum/bookingStatus.dart';
+import 'package:ontrain/data/enum/cancelReason.dart';
 import 'package:ontrain/model/stateEnum.dart';
 import 'package:ontrain/repo/bookingRepository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -293,6 +296,156 @@ class Bookingcontroller extends ChangeNotifier {
       _error = result.error?.message;
       notifyListeners();
       return false;
+    }
+  }
+
+  /// Cancels a booking with fee calculation.
+  /// Returns (success, feeCents, refundCents)
+  Future<(bool, int, int)> cancelBooking({
+    required String bookingId,
+    required CancelReason uiReason,
+    String? customReason,
+  }) async {
+    final clientId = authController.user?.id;
+    if (clientId == null) {
+      _error = 'Login required';
+      notifyListeners();
+      return (false, 0, 0);
+    }
+
+    // Default policy (can be fetched from settings later)
+    const policy = CancellationPolicy(
+      freeUntilHoursBefore: 24,
+      lateFeePercent: 50,
+      noShowFeePercent: 100,
+    );
+
+    _state = ViewState.loading;
+    _error = null;
+    notifyListeners();
+
+    final reasonText = customReason?.isNotEmpty == true
+        ? '$uiReason: $customReason'
+        : uiReason.displayName;
+
+    final result = await repository.cancelBookingWithFee(
+      bookingId: bookingId,
+      cancelledBy: 'client',
+      reason: reasonText,
+      policy: policy,
+    );
+
+    if (result.isSuccess) {
+      final booking = result.data!;
+      final feeCents = booking.cancellationFeeCents ?? 0;
+      final refundCents = booking.priceCents - feeCents;
+
+      _state = ViewState.success;
+      await fetchBookingsForClient(clientId);
+      notifyListeners();
+      return (true, feeCents, refundCents);
+    } else {
+      _state = ViewState.error;
+      _error = result.error?.message;
+      notifyListeners();
+      return (false, 0, 0);
+    }
+  }
+
+  /// Marks a booking as no-show (100% fee).
+  Future<bool> markNoShow(String bookingId, String noShowBy) async {
+    final clientId = authController.user?.id;
+    if (clientId == null) {
+      _error = 'Login required';
+      notifyListeners();
+      return false;
+    }
+
+    const policy = CancellationPolicy(
+      freeUntilHoursBefore: 24,
+      lateFeePercent: 50,
+      noShowFeePercent: 100,
+    );
+
+    _state = ViewState.loading;
+    _error = null;
+    notifyListeners();
+
+    final result = await repository.markNoShowWithFee(
+      bookingId: bookingId,
+      noShowBy: noShowBy,
+      policy: policy,
+    );
+
+    if (result.isSuccess) {
+      _state = ViewState.success;
+      await fetchBookingsForClient(clientId);
+      notifyListeners();
+      return true;
+    } else {
+      _state = ViewState.error;
+      _error = result.error?.message;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Creates a dispute for a booking.
+  Future<bool> createDispute({
+    required String bookingId,
+    required String againstUserId,
+    required String reason,
+  }) async {
+    final clientId = authController.user?.id;
+    if (clientId == null) {
+      _error = 'Login required';
+      notifyListeners();
+      return false;
+    }
+
+    _state = ViewState.loading;
+    _error = null;
+    notifyListeners();
+
+    final result = await repository.createDispute(
+      bookingId: bookingId,
+      raisedBy: clientId,
+      againstUserId: againstUserId,
+      reason: reason,
+    );
+
+    if (result.isSuccess) {
+      _state = ViewState.success;
+      await fetchBookingsForClient(clientId);
+      notifyListeners();
+      return true;
+    } else {
+      _state = ViewState.error;
+      _error = result.error?.message;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// Fetches disputes for current user.
+  Future<List<Dispute>> fetchDisputes() async {
+    final userId = authController.user?.id;
+    if (userId == null) return [];
+
+    _state = ViewState.loading;
+    _error = null;
+    notifyListeners();
+
+    final result = await repository.fetchDisputesByUser(userId);
+    if (result.isSuccess) {
+      _state = ViewState.success;
+      notifyListeners();
+      return result.data ?? [];
+    } else {
+      _state = ViewState.error;
+      _error = result.error?.message;
+      notifyListeners();
+      return [];
     }
   }
 }

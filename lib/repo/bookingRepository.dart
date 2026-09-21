@@ -1,4 +1,7 @@
+import 'package:ontrain/core/cancellation_policy.dart';
 import 'package:ontrain/data/object/booking.dart';
+import 'package:ontrain/data/object/dispute.dart';
+import 'package:ontrain/data/object/payment.dart';
 import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/data/object/service_package.dart';
 import 'package:ontrain/data/object/time_slot.dart';
@@ -324,5 +327,246 @@ class BookingRepository {
         RepoError(message: 'Error marking no-show: $e', code: 500),
       );
     }
+  }
+
+  /// Cancels a booking with fee calculation based on policy.
+  /// Returns the updated booking with fee info, and creates refund payment if applicable.
+  Future<Result<Booking>> cancelBookingWithFee({
+    required String bookingId,
+    required String cancelledBy, // 'client' | 'pt' | 'admin'
+    String? reason,
+    required CancellationPolicy policy,
+  }) async {
+    try {
+      // Fetch booking first
+      final bookingResponse = await _supabaseClient
+          .from('bookings')
+          .select('''
+            *,
+            pt_profiles!inner (
+              *,
+              profiles!inner (
+                id, email, full_name, avatar_url, phone, is_verified
+              )
+            ),
+            profiles!inner (
+              id, email, full_name, avatar_url, phone, is_verified
+            )
+          ''')
+          .eq('id', bookingId)
+          .single();
+
+      final booking = Booking.fromMap(bookingResponse);
+      final now = DateTime.now();
+
+      // Calculate fee
+      final (feeCents, reasonCode) = policy.calculateFee(
+        priceCents: booking.priceCents,
+        sessionStart: booking.startAt,
+        cancelledAt: now,
+        cancelledBy: cancelledBy,
+      );
+
+      final refundAmountCents = booking.priceCents - feeCents;
+
+      // Update booking with cancellation info
+      final status = cancelledBy == 'admin' ? 'cancelled_by_admin' : 'cancelled_by_$cancelledBy';
+      await _supabaseClient
+          .from('bookings')
+          .update({
+            'status': status,
+            'cancelled_by': cancelledBy,
+            'cancelled_at': now.toIso8601String(),
+            'cancellation_reason': reason ?? reasonCode,
+            'cancellation_fee_cents': feeCents,
+          })
+          .eq('id', bookingId);
+
+      // If there's a refund amount, create a refund payment record
+      if (refundAmountCents > 0) {
+        final paymentId = await _supabaseClient
+            .from('payments')
+            .insert({
+              'booking_id': bookingId,
+              'client_id': booking.clientId,
+              'amount_cents': refundAmountCents,
+              'platform_commission_cents': feeCents,
+              'pt_amount_cents': 0,
+              'payment_method': 'stripe',
+              'status': 'refunded',
+              'external_payment_id': 'refund_${DateTime.now().millisecondsSinceEpoch}',
+            })
+            .select('id')
+            .single()
+            .then((r) => r['id'] as String);
+
+        // Update payment_status on booking
+        await _supabaseClient
+            .from('bookings')
+            .update({'payment_status': 'refunded'})
+            .eq('id', bookingId);
+      } else if (feeCents >= booking.priceCents) {
+        // Full fee, no refund
+        await _supabaseClient
+            .from('bookings')
+            .update({'payment_status': 'no_refund'})
+            .eq('id', bookingId);
+      }
+
+      // Return updated booking
+      final updatedResponse = await _supabaseClient
+          .from('bookings')
+          .select('''
+            *,
+            pt_profiles!inner (
+              *,
+              profiles!inner (
+                id, email, full_name, avatar_url, phone, is_verified
+              )
+            ),
+            profiles!inner (
+              id, email, full_name, avatar_url, phone, is_verified
+            )
+          ''')
+          .eq('id', bookingId)
+          .single();
+
+      return Result.success(Booking.fromMap(updatedResponse));
+    } catch (e) {
+      return Result.failure(
+        RepoError(message: 'Error cancelling booking: $e', code: 500),
+      );
+    }
+  }
+
+  Future<Result<void>> markNoShowWithFee({
+    required String bookingId,
+    required String noShowBy, // 'client' | 'pt'
+    required CancellationPolicy policy,
+  }) async {
+    try {
+      final bookingResponse = await _supabaseClient
+          .from('bookings')
+          .select()
+          .eq('id', bookingId)
+          .single();
+
+      final booking = Booking.fromMap(bookingResponse);
+      final now = DateTime.now();
+
+      // No-show fee = 100% of price
+      final (feeCents, reasonCode) = policy.calculateFee(
+        priceCents: booking.priceCents,
+        sessionStart: booking.startAt,
+        cancelledAt: now,
+        cancelledBy: noShowBy,
+        isNoShow: true,
+      );
+
+      final status = noShowBy == 'client' ? 'no_show_client' : 'no_show_pt';
+      await _supabaseClient
+          .from('bookings')
+          .update({
+            'status': status,
+            'no_show_by': noShowBy,
+            'cancellation_fee_cents': feeCents,
+            'cancellation_reason': reasonCode,
+            'payment_status': 'no_refund',
+          })
+          .eq('id', bookingId);
+
+      return Result.success(null);
+    } catch (e) {
+      return Result.failure(
+        RepoError(message: 'Error marking no-show: $e', code: 500),
+      );
+    }
+  }
+
+  Future<Result<Dispute>> createDispute({
+    required String bookingId,
+    required String raisedBy,
+    required String againstUserId,
+    required String reason,
+  }) async {
+    try {
+      final response = await _supabaseClient
+          .from('disputes')
+          .insert({
+            'booking_id': bookingId,
+            'raised_by': raisedBy,
+            'against_user_id': againstUserId,
+            'reason': reason,
+            'status': 'open',
+          })
+          .select()
+          .single();
+
+      // Also update booking status to disputed
+      await _supabaseClient
+          .from('bookings')
+          .update({'status': 'disputed'})
+          .eq('id', bookingId);
+
+      return Result.success(Dispute.fromMap(response));
+    } catch (e) {
+      return Result.failure(
+        RepoError(message: 'Error creating dispute: $e', code: 500),
+      );
+    }
+  }
+
+  Future<Result<List<Dispute>>> fetchDisputesByUser(String userId) async {
+    try {
+      final response = await _supabaseClient
+          .from('disputes')
+          .select('*, bookings(*)')
+          .or('raised_by.eq.$userId,and_user_id.eq.$userId')
+          .order('created_at', ascending: false);
+
+      final disputes = response.map((e) => Dispute.fromMap(e)).toList();
+      return Result.success(disputes);
+    } catch (e) {
+      return Result.failure(
+        RepoError(message: 'Error fetching disputes: $e', code: 500),
+      );
+    }
+  }
+
+  Future<Result<void>> resolveDispute({
+    required String disputeId,
+    required DisputeStatus resolution,
+    String? resolutionNotes,
+    String? resolvedBy,
+  }) async {
+    try {
+      final updateData = {
+        'status': resolution.dbValue,
+        'resolved_at': DateTime.now().toIso8601String(),
+      };
+      if (resolutionNotes != null) {
+        updateData['resolution_notes'] = resolutionNotes;
+      }
+      if (resolvedBy != null) {
+        updateData['resolved_by'] = resolvedBy;
+      }
+
+      await _supabaseClient
+          .from('disputes')
+          .update(updateData)
+          .eq('id', disputeId);
+
+      return Result.success(null);
+    } catch (e) {
+      return Result.failure(
+        RepoError(message: 'Error resolving dispute: $e', code: 500),
+      );
+    }
+  }
+
+  Future<Result<void>> fetchCancellationPolicy() async {
+    // This can be used to fetch policy from platform_settings if needed
+    // For now, the controller passes it directly
+    return Result.success(null);
   }
 }

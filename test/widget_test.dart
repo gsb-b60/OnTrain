@@ -1,11 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ontrain/core/cancellation_policy.dart';
 import 'package:ontrain/data/object/booking.dart';
+import 'package:ontrain/data/object/dispute.dart';
 import 'package:ontrain/data/object/payment.dart';
 import 'package:ontrain/data/object/payout.dart';
 import 'package:ontrain/data/object/pt_earnings.dart';
 import 'package:ontrain/data/object/service_package.dart';
 import 'package:ontrain/data/object/time_slot.dart';
 import 'package:ontrain/data/enum/bookingStatus.dart';
+import 'package:ontrain/data/enum/cancelReason.dart';
+import 'package:ontrain/data/enum/disputeStatus.dart';
 import 'package:ontrain/data/enum/earningsStatus.dart';
 import 'package:ontrain/data/enum/paymentStatus.dart';
 import 'package:ontrain/data/enum/payoutStatus.dart';
@@ -85,7 +89,167 @@ Payout _testPayout({
   );
 }
 
+Dispute _testDispute({
+  String id = 'dispute-1',
+  DisputeStatus status = DisputeStatus.open,
+}) {
+  return Dispute(
+    id: id,
+    bookingId: 'booking-1',
+    raisedBy: 'client-1',
+    againstUserId: 'pt-1',
+    reason: 'Test dispute',
+    status: status,
+  );
+}
+
 void main() {
+  group('CancellationPolicy', () {
+    const policy = CancellationPolicy(
+      freeUntilHoursBefore: 24,
+      lateFeePercent: 50,
+      noShowFeePercent: 100,
+    );
+
+    test('free cancel when > 24h before session', () {
+      final now = DateTime.now();
+      final sessionStart = now.add(const Duration(hours: 48));
+      final (fee, reason) = policy.calculateFee(
+        priceCents: 100000,
+        sessionStart: sessionStart,
+        cancelledAt: now,
+        cancelledBy: 'client',
+      );
+      expect(fee, 0);
+      expect(reason, 'free_cancel');
+    });
+
+    test('late cancel when ≤ 24h before session', () {
+      final now = DateTime.now();
+      final sessionStart = now.add(const Duration(hours: 2));
+      final (fee, reason) = policy.calculateFee(
+        priceCents: 100000,
+        sessionStart: sessionStart,
+        cancelledAt: now,
+        cancelledBy: 'client',
+      );
+      expect(fee, 50000); // 50%
+      expect(reason, 'late_cancel');
+    });
+
+    test('no-show client fee = 100%', () {
+      final now = DateTime.now();
+      final sessionStart = now.add(const Duration(hours: 1));
+      final (fee, reason) = policy.calculateFee(
+        priceCents: 100000,
+        sessionStart: sessionStart,
+        cancelledAt: now,
+        cancelledBy: 'client',
+        isNoShow: true,
+      );
+      expect(fee, 100000);
+      expect(reason, 'no_show');
+    });
+
+    test('no-show PT fee = 100%', () {
+      final now = DateTime.now();
+      final sessionStart = now.add(const Duration(hours: 1));
+      final (fee, reason) = policy.calculateFee(
+        priceCents: 100000,
+        sessionStart: sessionStart,
+        cancelledAt: now,
+        cancelledBy: 'pt',
+        isNoShow: true,
+      );
+      expect(fee, 100000);
+      expect(reason, 'no_show');
+    });
+
+    test('admin cancel = 0 fee', () {
+      final now = DateTime.now();
+      final sessionStart = now.add(const Duration(hours: 1));
+      final (fee, reason) = policy.calculateFee(
+        priceCents: 100000,
+        sessionStart: sessionStart,
+        cancelledAt: now,
+        cancelledBy: 'admin',
+      );
+      expect(fee, 0);
+      expect(reason, 'admin_cancel');
+    });
+
+    test('PT cancel before free window = 0 fee', () {
+      final now = DateTime.now();
+      final sessionStart = now.add(const Duration(hours: 48));
+      final (fee, reason) = policy.calculateFee(
+        priceCents: 100000,
+        sessionStart: sessionStart,
+        cancelledAt: now,
+        cancelledBy: 'pt',
+      );
+      expect(fee, 0);
+      expect(reason, 'free_cancel');
+    });
+
+    test('PT cancel within free window = 50% fee', () {
+      final now = DateTime.now();
+      final sessionStart = now.add(const Duration(hours: 12));
+      final (fee, reason) = policy.calculateFee(
+        priceCents: 100000,
+        sessionStart: sessionStart,
+        cancelledAt: now,
+        cancelledBy: 'pt',
+      );
+      expect(fee, 50000);
+      expect(reason, 'late_cancel');
+    });
+  });
+
+  group('CancelReason enum', () {
+    test('all values have correct dbValue and displayName', () {
+      expect(CancelReason.rescheduling.dbValue, 'rescheduling');
+      expect(CancelReason.rescheduling.displayName, 'Đổi lịch');
+      expect(CancelReason.unexpectedWork.dbValue, 'unexpected_work');
+      expect(CancelReason.unexpectedWork.displayName, 'Việc đột xuất');
+      expect(CancelReason.weather.dbValue, 'weather');
+      expect(CancelReason.weather.displayName, 'Thời tiết xấu');
+      expect(CancelReason.others.dbValue, 'others');
+      expect(CancelReason.others.displayName, 'Lý do khác');
+    });
+
+    test('fromString parses correctly', () {
+      expect(CancelReason.fromString('rescheduling'), CancelReason.rescheduling);
+      expect(CancelReason.fromString('unexpected_work'), CancelReason.unexpectedWork);
+      expect(CancelReason.fromString('weather'), CancelReason.weather);
+      expect(CancelReason.fromString('others'), CancelReason.others);
+      expect(CancelReason.fromString('unknown'), CancelReason.others);
+    });
+  });
+
+  group('DisputeStatus enum', () {
+    test('all values have correct dbValue and displayName', () {
+      expect(DisputeStatus.open.dbValue, 'open');
+      expect(DisputeStatus.open.displayName, 'Đang mở');
+      expect(DisputeStatus.resolvedClient.dbValue, 'resolved_client');
+      expect(DisputeStatus.resolvedClient.displayName, 'Quyết định cho khách');
+      expect(DisputeStatus.resolvedPt.dbValue, 'resolved_pt');
+      expect(DisputeStatus.resolvedPt.displayName, 'Quyết định cho PT');
+      expect(DisputeStatus.resolvedSplit.dbValue, 'resolved_split');
+      expect(DisputeStatus.resolvedSplit.displayName, 'Chia sẻ');
+      expect(DisputeStatus.refunded.dbValue, 'refunded');
+      expect(DisputeStatus.refunded.displayName, 'Đã hoàn tiền');
+    });
+
+    test('fromString parses correctly', () {
+      expect(DisputeStatus.fromString('open'), DisputeStatus.open);
+      expect(DisputeStatus.fromString('resolved_client'), DisputeStatus.resolvedClient);
+      expect(DisputeStatus.fromString('resolved_pt'), DisputeStatus.resolvedPt);
+      expect(DisputeStatus.fromString('resolved_split'), DisputeStatus.resolvedSplit);
+      expect(DisputeStatus.fromString('refunded'), DisputeStatus.refunded);
+      expect(DisputeStatus.fromString('unknown'), DisputeStatus.open);
+    });
+  });
+
   group('Booking filter logic', () {
     test('upcoming filters confirmed and inProgress bookings in future', () {
       final now = DateTime.now();
@@ -414,6 +578,57 @@ void main() {
       expect(map.containsKey('processed_at'), isFalse);
       expect(map['pt_id'], 'pt-1');
       expect(map['status'], 'requested');
+    });
+
+    test('Dispute.fromMap parses all status strings correctly', () {
+      for (final status in DisputeStatus.values) {
+        final map = {
+          'id': 'test',
+          'booking_id': 'booking-1',
+          'raised_by': 'client-1',
+          'against_user_id': 'pt-1',
+          'reason': 'Test dispute',
+          'status': status.dbValue,
+          'created_at': DateTime.now().toIso8601String(),
+        };
+        final dispute = Dispute.fromMap(map);
+        expect(dispute.status, status);
+      }
+    });
+
+    test('Dispute.fromMap parses correctly with all fields', () {
+      final now = DateTime.now().toIso8601String();
+      final map = {
+        'id': 'dispute-1',
+        'booking_id': 'booking-1',
+        'raised_by': 'client-1',
+        'against_user_id': 'pt-1',
+        'reason': 'Session not delivered',
+        'status': 'resolved_client',
+        'resolution_notes': 'Refund approved',
+        'resolved_by': 'admin-1',
+        'created_at': now,
+        'resolved_at': now,
+      };
+      final dispute = Dispute.fromMap(map);
+      expect(dispute.id, 'dispute-1');
+      expect(dispute.bookingId, 'booking-1');
+      expect(dispute.raisedBy, 'client-1');
+      expect(dispute.againstUserId, 'pt-1');
+      expect(dispute.reason, 'Session not delivered');
+      expect(dispute.status, DisputeStatus.resolvedClient);
+      expect(dispute.resolutionNotes, 'Refund approved');
+      expect(dispute.resolvedBy, 'admin-1');
+    });
+
+    test('Dispute.toInsertMap excludes id and timestamps', () {
+      final dispute = _testDispute();
+      final map = dispute.toInsertMap();
+      expect(map.containsKey('id'), isFalse);
+      expect(map.containsKey('created_at'), isFalse);
+      expect(map.containsKey('resolved_at'), isFalse);
+      expect(map['booking_id'], 'booking-1');
+      expect(map['status'], 'open');
     });
   });
 }
