@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Notification;
 import 'package:ontrain/controller/notificationController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
-import 'package:ontrain/data/object/notification.dart';
+import 'package:ontrain/data/object/notification.dart' as ontrain_notification;
 import 'package:intl/intl.dart';
+import 'package:ontrain/model/stateEnum.dart';
 import 'package:provider/provider.dart';
 
 class NotificationsPage extends StatefulWidget {
@@ -119,7 +120,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     );
   }
 
-  void _handleNotificationTap(BuildContext context, Notification notification) {
+  void _handleNotificationTap(BuildContext context, ontrain_notification.Notification notification) {
     // Navigate based on notification type and data
     final data = notification.data;
     if (data == null) return;
@@ -152,7 +153,7 @@ class _NotificationTile extends StatelessWidget {
     required this.onTap,
   });
 
-  final Notification notification;
+  final ontrain_notification.Notification notification;
   final VoidCallback onTap;
 
   @override

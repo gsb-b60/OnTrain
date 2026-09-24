@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class AppColors {
   static const Color aquaTeal = Color(0xFF50C9C3);
   static const Color mintLight = Color(0xFF96DEDA);
-  static const Color light=Colors.white;
-  static const Color black=Colors.black;
-  static const Color greyAqua=Color.fromRGBO( 233, 246, 254,1);
+  static const Color light = Colors.white;
+  static const Color black = Colors.black;
+  static const Color greyAqua = Color.fromRGBO(233, 246, 254, 1);
+  static const Color red = Colors.red;
+  static const Color error = Colors.red;
+  static const Color success = Colors.green;
+  static const Color warning = Colors.orange;
 
   // Tailwind Gray Palette
   static const Color gray100 = Color(0xFFF3F4F6);

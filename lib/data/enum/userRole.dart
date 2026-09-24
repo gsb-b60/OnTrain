@@ -14,4 +14,6 @@ enum UserRole {
       orElse: () => UserRole.client,
     );
   }
+
+  static List<UserRole> get selectableRoles => [UserRole.client, UserRole.pt];
 }

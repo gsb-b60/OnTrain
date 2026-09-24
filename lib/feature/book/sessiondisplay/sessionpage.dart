@@ -315,11 +315,15 @@ class _BookingCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (booking.status == BookingStatus.completed)
+                  if (booking.status == BookingStatus.completed && booking.id != null)
                     GestureDetector(
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => ReviewPage()),
+                        MaterialPageRoute(builder: (context) => ReviewPage(
+                          bookingId: booking.id!,
+                          ptId: booking.pt?.id ?? '',
+                          ptName: booking.pt?.name ?? 'Personal Trainer',
+                        )),
                       ),
                       child: Container(
                         height: 35,
@@ -370,23 +374,33 @@ class _BookingCard extends StatelessWidget {
                       booking.status == BookingStatus.inProgress)
                     IconButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                CancelAppoint(bookingId: booking.id),
-                          ),
-                        );
+                        if (booking.id != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CancelAppoint(bookingId: booking.id!),
+                            ),
+                          );
+                        }
                       },
                       icon: Icon(Icons.cancel, color: AppColors.aquaTeal),
                     ),
                   if (booking.status == BookingStatus.cancelledByClient ||
                       booking.status == BookingStatus.cancelledByPt)
                     GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ReviewPage()),
-                      ),
+                      onTap: () {
+                        if (booking.id != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ReviewPage(
+                              bookingId: booking.id!,
+                              ptId: booking.pt?.id ?? '',
+                              ptName: booking.pt?.name ?? 'Personal Trainer',
+                            )),
+                          );
+                        }
+                      },
                       child: Container(
                         height: 35,
                         width: 300,

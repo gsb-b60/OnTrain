@@ -179,14 +179,17 @@ class YourSessionPage extends StatelessWidget {
                             ),
                             IconButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CancelAppoint(
-                                      bookingId: booking?.id,
+                                final bookingId = booking?.id;
+                                if (bookingId != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CancelAppoint(
+                                        bookingId: bookingId,
+                                      ),
                                     ),
-                                  ),
-                                );
+                                  );
+                                }
                               },
                               icon: Icon(
                                 Icons.cancel_rounded,

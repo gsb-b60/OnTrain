@@ -18,34 +18,43 @@ class SignupScreen extends StatefulWidget {
 }
 
 class SignupScreenState extends State<SignupScreen> {
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate = DateTime(2000, 10, 15);
   UserRole? selectedRole;
 
   final passwordControlller = TextEditingController();
   final emailController = TextEditingController();
-  final nameController = TextEditingController(); 
+  final nameController = TextEditingController();
   void signUp() async {
     final name = nameController.text.trim();
     final email = emailController.text.trim();
     final password = passwordControlller.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || selectedRole == null) {
+    if (name.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        selectedRole == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Hãy điền đầy đủ thông tin và chọn loại tài khoản')),
+        SnackBar(
+          content: Text('Hãy điền đầy đủ thông tin và chọn loại tài khoản'),
+        ),
       );
       return;
     }
 
     try {
-      final result = await context.read<AuthController>().signUp(email, password, selectedRole!, name);
+      final result = await context.read<AuthController>().signUp(
+        email,
+        password,
+        selectedRole!,
+        name,
+      );
       if (!mounted) {
         return;
       }
       if (result.isSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Đăng ký thành công!')),
-          
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Đăng ký thành công!')));
         Navigator.pop(context);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -118,7 +127,7 @@ class SignupScreenState extends State<SignupScreen> {
           HeaderBar(title: "Sign up"),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +249,7 @@ class SignupScreenState extends State<SignupScreen> {
                         DropdownButton<UserRole>(
                           value: selectedRole,
                           hint: Text("Select role"),
-                          items: UserRole.values.map((UserRole role) {
+                          items: UserRole.selectableRoles.map((UserRole role) {
                             return DropdownMenuItem<UserRole>(
                               value: role,
                               child: Text(role.displayName),

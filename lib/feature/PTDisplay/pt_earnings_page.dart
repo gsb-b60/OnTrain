@@ -7,6 +7,7 @@ import 'package:ontrain/data/object/payout.dart';
 import 'package:ontrain/data/object/pt_earnings.dart';
 import 'package:ontrain/data/enum/earningsStatus.dart';
 import 'package:ontrain/data/enum/payoutStatus.dart';
+import 'package:ontrain/model/stateEnum.dart';
 import 'package:provider/provider.dart';
 
 class PTEarningsPage extends StatefulWidget {

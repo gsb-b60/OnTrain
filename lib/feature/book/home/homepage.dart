@@ -103,14 +103,14 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Row(
                     children: [
-                      IconButton.filledTonal(
-                        onPressed: () {},
-                        icon: Icon(Icons.notifications_none_sharp),
-                      ),
-                      IconButton.filledTonal(
-                        onPressed: () {},
-                        icon: Icon(Icons.settings),
-                      ),
+                      // IconButton.filledTonal(
+                      //   onPressed: () {},
+                      //   icon: Icon(Icons.notifications_none_sharp),
+                      // ),
+                      // IconButton.filledTonal(
+                      //   onPressed: () {},
+                      //   icon: Icon(Icons.settings),
+                      // ),
                       IconButton.filledTonal(
                         onPressed: () {},
                         icon: Icon(Icons.search),
@@ -258,80 +258,7 @@ class _TableCalendarExState extends State<TableCalendarEx> {
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  List<PTSession> ptSessions = [
-    PTSession(
-      id: 1,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 5),
-      startTime: DateTime(2026, 1, 5, 7, 0),
-      endTime: DateTime(2026, 1, 5, 9, 0),
-      notes: 'note for session 1',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 2,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 6, 18, 0),
-      endTime: DateTime(2026, 1, 6, 19, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 3,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 8, 18, 0),
-      endTime: DateTime(2026, 1, 8, 19, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 4,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 8, 9, 0),
-      endTime: DateTime(2026, 1, 8, 11, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 5,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 9, 18, 0),
-      endTime: DateTime(2026, 1, 9, 20, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 6,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 10, 18, 0),
-      endTime: DateTime(2026, 1, 10, 20, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 7,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 12, 18, 0),
-      endTime: DateTime(2026, 1, 12, 19, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-    PTSession(
-      id: 8,
-      ptContranstId: 101,
-      sessionDate: DateTime(2026, 1, 7),
-      startTime: DateTime(2026, 1, 13, 18, 0),
-      endTime: DateTime(2026, 1, 13, 19, 0),
-      notes: 'Note for session 2',
-      createdAt: DateTime.now(),
-    ),
-  ];
+  List<PTSession> ptSessions = [];
 
   @override
   Widget build(BuildContext context) {
