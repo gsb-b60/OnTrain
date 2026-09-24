@@ -1,9 +1,165 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/ptSession.dart';
+import 'package:ontrain/feature/PTDisplay/ptlistpage.dart';
 import 'package:ontrain/feature/book/yoursessionpage.dart';
+import 'package:ontrain/feature/profile/profilepage.dart';
+import 'package:ontrain/feature/specialties/specialtiesScreen.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+class HomeTab extends StatelessWidget {
+  const HomeTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(23.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Row(
+                    children: [
+                      IconButton.filledTonal(
+                        onPressed: () {},
+                        icon: Icon(Icons.search),
+                      ),
+                    ],
+                  ),
+                  Spacer(),
+                  SizedBox(
+                    height: 40,
+                    width: 170,
+                    child: Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              "Hi, WelcomeBack",
+                              style: TextStyle(color: AppColors.aquaTeal),
+                            ),
+                            Consumer<AuthController>(
+                              builder: (context, authController, child) {
+                                return Text(
+                                  authController.user?.name ?? 'Loading...',
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        Spacer(),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ProfilePage(isMainScreen: false),
+                            ),
+                          ),
+                          child: CircleAvatar(
+                            backgroundImage: AssetImage(
+                              "assets/PXL_20251014_011048644~2.jpg",
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    "Category",
+                    style: TextStyle(
+                      color: AppColors.aquaTeal,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+              Divider(thickness: 1),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  CateBtn(
+                    title: "Favorite",
+                    ico: Icons.favorite,
+                    onCall: () {},
+                  ),
+                  CateBtn(
+                    title: "PT",
+                    ico: Icons.person,
+                    onCall: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => PTListpage()),
+                      );
+                    },
+                  ),
+                  CateBtn(title: "GYM", ico: Icons.map, onCall: () {}),
+                  CateBtn(
+                    title: "Specialties",
+                    ico: Icons.school,
+                    onCall: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SpecialtiesScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  CateBtn(
+                    title: "Records",
+                    ico: Icons.receipt_long,
+                    onCall: () {},
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Expanded(child: TableCalendarEx()),
+      ],
+    );
+  }
+}
+
+class CateBtn extends StatelessWidget {
+  const CateBtn({
+    super.key,
+    required this.onCall,
+    required this.title,
+    required this.ico,
+  });
+  final VoidCallback onCall;
+  final String title;
+  final IconData ico;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => {onCall()},
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(5),
+            child: Icon(ico, color: AppColors.aquaTeal),
+          ),
+          Text(title, style: TextStyle(color: AppColors.aquaTeal)),
+        ],
+      ),
+    );
+  }
+}
 
 class TableCalendarEx extends StatefulWidget {
   const TableCalendarEx({super.key});
