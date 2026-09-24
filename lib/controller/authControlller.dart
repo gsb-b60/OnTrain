@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
@@ -13,7 +12,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AuthController extends ChangeNotifier {
   final Authrepo repo;
   AuthController({Authrepo? repo, SupabaseClient? supabaseClient})
-      : repo = repo ?? Authrepo(supabaseClient: supabaseClient);
+    : repo = repo ?? Authrepo(supabaseClient: supabaseClient);
   ViewState state = ViewState.idle;
   UserData? _user;
   String? error;
@@ -41,8 +40,49 @@ class AuthController extends ChangeNotifier {
     String password,
     UserRole role,
     String fullName,
+    DateTime dateOfBirth,
   ) async {
-    return await repo.signUp(email, password, role, fullName);
+    final trimmedName = fullName.trim();
+    final trimmedEmail = email.trim();
+    final trimmedPassword = password.trim();
+
+    if (trimmedName.isEmpty ||
+        trimmedEmail.isEmpty ||
+        trimmedPassword.isEmpty) {
+      error = 'Hãy điền đầy đủ thông tin và chọn loại tài khoản';
+      state = ViewState.error;
+      notifyListeners();
+      return Result.failure(RepoError(message: error!, code: 400));
+    }
+
+    if (state != ViewState.loading) {
+      state = ViewState.loading;
+      error = null;
+      notifyListeners();
+    }
+
+    try {
+      final result = await repo.signUp(
+        trimmedEmail,
+        trimmedPassword,
+        role,
+        trimmedName,
+        dateOfBirth,
+      );
+      if (result.isSuccess) {
+        state = ViewState.success;
+      } else {
+        error = result.error?.message;
+        state = ViewState.error;
+      }
+      notifyListeners();
+      return result;
+    } catch (e) {
+      error = e.toString();
+      state = ViewState.error;
+      notifyListeners();
+      return Result.failure(RepoError(message: error!, code: 500));
+    }
   }
 
   Future<void> signOut() async {

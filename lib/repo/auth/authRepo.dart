@@ -35,6 +35,7 @@ class Authrepo {
     String password,
     UserRole role,
     String fullName,
+    DateTime dateOfBirth,
   ) async {
     try {
       final response = await _supabaseClient.auth.signUp(
@@ -52,6 +53,7 @@ class Authrepo {
         'email': email,
         'full_name': fullName,
         'role': role.dbValue,
+        'date_of_birth': dateOfBirth.toIso8601String().split('T').first,
         'timezone': 'Asia/Ho_Chi_Minh',
         'locale': 'vi',
         'is_verified': false,

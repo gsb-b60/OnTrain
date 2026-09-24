@@ -7,7 +7,7 @@ import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
 import 'package:ontrain/data/enum/userRole.dart';
-import 'package:ontrain/feature/auth/signIn.dart';
+import 'package:ontrain/feature/auth/signInScreen.dart';
 import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -25,14 +25,7 @@ class SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final nameController = TextEditingController();
   void signUp() async {
-    final name = nameController.text.trim();
-    final email = emailController.text.trim();
-    final password = passwordControlller.text.trim();
-
-    if (name.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty ||
-        selectedRole == null) {
+    if (selectedRole == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Hãy điền đầy đủ thông tin và chọn loại tài khoản'),
@@ -40,30 +33,29 @@ class SignupScreenState extends State<SignupScreen> {
       );
       return;
     }
-
-    try {
-      final result = await context.read<AuthController>().signUp(
-        email,
-        password,
-        selectedRole!,
-        name,
-      );
-      if (!mounted) {
-        return;
-      }
-      if (result.isSuccess) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Đăng ký thành công!')));
-        Navigator.pop(context);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Đăng ký thất bại: ${result.error!.message}')),
-        );
-      }
-    } catch (e) {
+    final authController = context.read<AuthController>();
+    final result = await authController.signUp(
+      emailController.text,
+      passwordControlller.text,
+      selectedRole!,
+      nameController.text,
+      selectedDate,
+    );
+    if (!mounted) {
+      return;
+    }
+    if (result.isSuccess) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Đăng ký thành công!')));
+      Navigator.pop(context);
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Đăng ký thất bại: ${e.toString()}')),
+        SnackBar(
+          content: Text(
+            'Đăng ký thất bại: ${authController.error ?? result.error?.message ?? 'Unknown error'}',
+          ),
+        ),
       );
     }
   }
