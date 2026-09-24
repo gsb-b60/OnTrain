@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/core/constrants/app_size.dart';
-import 'package:ontrain/feature/auth/signIn.dart';
+import 'package:ontrain/feature/auth/signInScreen.dart';
 import 'package:ontrain/feature/auth/signUpScreen.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -14,91 +14,91 @@ class WelcomeScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Spacer(),
-            Image.asset(
-              "assets/fitness-app-main.png",
-              height: AppSizes.imageHeight.toDouble(),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "On",
-                  style: TextStyle(
-                    fontSize: AppSizes.large,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.aquaTeal,
-                  ),
+          Image.asset(
+            "assets/fitness-app-main.png",
+            height: AppSizes.imageHeight.toDouble(),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "On",
+                style: TextStyle(
+                  fontSize: AppSizes.large,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.aquaTeal,
                 ),
-                Text(
-                  "Train",
-                  style: TextStyle(
-                    fontSize: AppSizes.large,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.aquaTeal,
-                  ),
+              ),
+              Text(
+                "Train",
+                style: TextStyle(
+                  fontSize: AppSizes.large,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.aquaTeal,
                 ),
-              ],
-            ),
-            SizedBox(height: 100),
-            Column(
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignInScreen()),
+              ),
+            ],
+          ),
+          SizedBox(height: 100),
+          Column(
+            children: [
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignInScreen()),
+                ),
+                child: Container(
+                  margin: EdgeInsets.all(8.0),
+                  height: 50,
+                  width: 200,
+                  decoration: BoxDecoration(
+                    gradient: AppGradients.focus,
+                    borderRadius: BorderRadius.circular(24),
                   ),
-                  child: Container(
-                    margin: EdgeInsets.all(8.0),
-                    height: 50,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      gradient: AppGradients.focus,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Log In",
-                        style: TextStyle(
-                          fontSize: AppSizes.medium,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.light,
-                        ),
-                        textAlign: TextAlign.center,
+                  child: Center(
+                    child: Text(
+                      "Log In",
+                      style: TextStyle(
+                        fontSize: AppSizes.medium,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.light,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignupScreen()),
+              ),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignupScreen()),
+                ),
+                child: Container(
+                  margin: EdgeInsets.all(8.0),
+                  height: 50,
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: AppColors.greyAqua,
+                    borderRadius: BorderRadius.circular(24),
                   ),
-                  child: Container(
-                    margin: EdgeInsets.all(8.0),
-                    height: 50,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      color: AppColors.greyAqua,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          fontSize: AppSizes.medium,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.aquaTeal,
-                        ),
-                        textAlign: TextAlign.center,
+                  child: Center(
+                    child: Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        fontSize: AppSizes.medium,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.aquaTeal,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
-                SizedBox(height: 75),
-              ],
-            ),
-          ],
-        ),
+              ),
+              SizedBox(height: 75),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

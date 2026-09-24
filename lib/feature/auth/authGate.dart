@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:ontrain/feature/auth/signIn.dart';
+import 'package:ontrain/feature/auth/signInScreen.dart';
 import 'package:ontrain/feature/book/home/homepage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 

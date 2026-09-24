@@ -19,20 +19,38 @@ class AuthController extends ChangeNotifier {
   UserData? get user => _user;
 
   Future<Result<void>> signIn(String email, String password) async {
+    final trimmedEmail = email.trim();
+    final trimmedPassword = password.trim();
+
+    if (trimmedEmail.isEmpty || trimmedPassword.isEmpty) {
+      error = 'Please enter both email and password';
+      state = ViewState.error;
+      notifyListeners();
+      return Result.failure(RepoError(message: error!, code: 400));
+    }
+
     if (state != ViewState.loading) {
       state = ViewState.loading;
       error = null;
       notifyListeners();
     }
-    final result = await repo.signIn(email, password);
-    if (result.isSuccess) {
-      state = ViewState.success;
-    } else {
-      error = result.error?.message;
+
+    try {
+      final result = await repo.signIn(trimmedEmail, trimmedPassword);
+      if (result.isSuccess) {
+        state = ViewState.success;
+      } else {
+        error = result.error?.message;
+        state = ViewState.error;
+      }
+      notifyListeners();
+      return result;
+    } catch (e) {
+      error = e.toString();
       state = ViewState.error;
+      notifyListeners();
+      return Result.failure(RepoError(message: error!, code: 500));
     }
-    notifyListeners();
-    return result;
   }
 
   Future<Result<void>> signUp(
