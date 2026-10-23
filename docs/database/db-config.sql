@@ -274,6 +274,7 @@ GRANT EXECUTE ON FUNCTION create_booking TO authenticated;
 
 -- =============================================================
 -- 4b) SECURITY DEFINER RPC: ATOMIC PAYOUT REQUEST
+-- Mirrored in supabase/migrations/0013_request_payout.sql
 -- =============================================================
 CREATE OR REPLACE FUNCTION request_payout()
 RETURNS UUID
