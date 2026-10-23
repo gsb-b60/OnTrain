@@ -8,37 +8,39 @@ class PayoutRepository {
   final SupabaseClient _supabaseClient;
 
   PayoutRepository({SupabaseClient? supabaseClient})
-      : _supabaseClient = supabaseClient ?? Supabase.instance.client;
+    : _supabaseClient = supabaseClient ?? Supabase.instance.client;
 
-  Future<Result<String>> requestPayout({
-    required String ptId,
-    required int amountCents,
-    required String bankAccountName,
-    required String bankAccountNumber,
-    required String bankName,
-    String? bankBranch,
-  }) async {
+  /// Requests a payout of the full available balance.
+  ///
+  /// The database function reads the PT's bank details, checks the minimum,
+  /// inserts the payout and links all available earnings atomically.
+  Future<Result<String>> requestPayout() async {
     try {
-      final response = await _supabaseClient
-          .from('payouts')
-          .insert({
-            'pt_id': ptId,
-            'amount_cents': amountCents,
-            'status': 'requested',
-            'bank_account_name': bankAccountName,
-            'bank_account_number': bankAccountNumber,
-            'bank_name': bankName,
-            'bank_branch': bankBranch,
-          })
-          .select('id')
-          .single();
+      final payoutId = await _supabaseClient.rpc<String>('request_payout');
 
-      return Result.success(response['id'] as String);
+      return Result.success(payoutId);
     } catch (e) {
       return Result.failure(
-        RepoError(message: 'Error requesting payout: $e', code: 500),
+        RepoError(message: _payoutErrorMessage(e), code: 500),
       );
     }
+  }
+
+  String _payoutErrorMessage(Object error) {
+    final message = error.toString();
+    if (message.contains('bank details not configured')) {
+      return 'Bank details not configured in profile';
+    }
+    if (message.contains('below minimum payout')) {
+      return 'Available balance is below the minimum payout';
+    }
+    if (message.contains('no available earnings')) {
+      return 'No available earnings to withdraw';
+    }
+    if (message.contains('not authenticated')) {
+      return 'PT not authenticated';
+    }
+    return 'Error requesting payout: $error';
   }
 
   Future<Result<List<Payout>>> fetchPayoutsByPT(String ptId) async {
@@ -84,9 +86,7 @@ class PayoutRepository {
     String? failureReason,
   }) async {
     try {
-      final updateData = <String, dynamic>{
-        'status': newStatus.dbValue,
-      };
+      final updateData = <String, dynamic>{'status': newStatus.dbValue};
 
       if (newStatus == PayoutStatus.processing ||
           newStatus == PayoutStatus.completed) {
@@ -102,6 +102,8 @@ class PayoutRepository {
           .update(updateData)
           .eq('id', payoutId);
 
+      // The DB trigger releases linked pt_earnings when the new status is
+      // failed or cancelled, so those earnings become available again.
       return Result.success(null);
     } catch (e) {
       return Result.failure(
