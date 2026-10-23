@@ -59,11 +59,15 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
             child: CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 220,
+                  expandedHeight: 300,
                   floating: false,
                   pinned: true,
                   backgroundColor: AppColors.aquaTeal,
                   flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsetsDirectional.only(
+                      start: 20,
+                      bottom: 16,
+                    ),
                     title: const Text(
                       'Earnings',
                       style: TextStyle(
@@ -75,10 +79,10 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
                       decoration: const BoxDecoration(
                         gradient: AppGradients.brand,
                       ),
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 56),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _BalanceCard(
                             label: 'Available Balance',
@@ -294,7 +298,7 @@ class _BalanceCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            NumberFormat('#,###').format(amount) + ' VND',
+            '${NumberFormat('#,###').format(amount)} VND',
             style: TextStyle(
               color: color,
               fontSize: AppSizes.semiLarge,

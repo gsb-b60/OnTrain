@@ -122,6 +122,7 @@ void main() {
 
     expect(result, isFalse);
     expect(controller.error, contains('Minimum payout'));
+    expect(controller.error, contains('50,000 VND'));
     expect(payouts.requestCalls, 0);
   });
 

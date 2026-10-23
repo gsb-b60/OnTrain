@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/data/object/payout.dart';
 import 'package:ontrain/data/object/pt_earnings.dart';
@@ -101,7 +102,7 @@ class PTEarningsController extends ChangeNotifier {
 
     if (_availableBalance < _minPayoutAmount) {
       _error =
-          'Minimum payout amount is ${(_minPayoutAmount / 100).toStringAsFixed(0)} VND';
+          'Minimum payout amount is ${NumberFormat('#,###').format(_minPayoutAmount)} VND';
       notifyListeners();
       return false;
     }
