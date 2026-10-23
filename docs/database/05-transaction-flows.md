@@ -372,45 +372,25 @@ final payouts = await supabase
 
 ### 4.2 PT Requests Payout
 
+The client calls the atomic `request_payout()` RPC. It runs as the function owner, so the PT does not need `UPDATE` permission on `pt_earnings`, and the payout plus earning links commit together.
+
 ```dart
-// 1. Check minimum payout (from platform_settings)
-final settings = await supabase
-  .from('platform_settings')
-  .select('value')
-  .eq('key', 'payout_schedule')
-  .single();
-final minAmount = (settings['value'] as Map)['min_amount_cents'] as int;
-
-// 2. Calculate available earnings
-final available = await supabase
-  .from('pt_earnings')
-  .select('id, net_amount_cents')
-  .eq('pt_id', ptId)
-  .eq('is_released', true)
-  .isFilter('payout_id', null);
-
-final total = available.fold(0, (sum, e) => sum + e['net_amount_cents'] as int);
-
-if (total < minAmount) throw 'Minimum payout not met';
-
-// 3. Create payout request
-final payout = await supabase.from('payouts').insert({
-  'pt_id': ptId,
-  'amount_cents': total,
-  'period_start': periodStart,
-  'period_end': periodEnd,
-  'bank_account_name': bankName,
-  'bank_account_number': bankAccount,
-  'bank_name': bankBank,
-  'status': 'pending',
-}).select().single();
-
-// 4. Link earnings to payout
-final earningIds = available.map((e) => e['id']).toList();
-await supabase.from('pt_earnings')
-  .update({'payout_id': payout['id']})
-  .inFilter('id', earningIds);
+// The RPC reads the PT's bank details from pt_profiles, enforces the minimum,
+// inserts payouts with status='pending' and period_start/period_end, then
+// links every released, unlinked earning to the new payout.
+final payoutId = await supabase.rpc<String>('request_payout');
 ```
+
+Server-side behavior (`docs/database/db-config.sql`):
+
+1. `auth.uid()` identifies the PT and `pg_advisory_xact_lock` serializes requests.
+2. Bank details are read from `pt_profiles` (snapshot at request time).
+3. `SUM(net_amount_cents)` over `is_released = TRUE AND payout_id IS NULL`.
+4. Minimum is read from `platform_settings.payout_min_amount_cents`.
+5. `payouts` row is inserted with `status = 'pending'`, `period_start = MIN(created_at)`, `period_end = CURRENT_DATE`.
+6. Those earnings get `payout_id = <new payout>`.
+
+Do **not** link earnings with a client-side `UPDATE`: `pt_earnings` is granted `SELECT` only.
 
 ### 4.3 Admin Processes Payout
 
