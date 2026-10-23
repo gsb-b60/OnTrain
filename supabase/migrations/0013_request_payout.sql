@@ -14,6 +14,7 @@ DECLARE
   v_min INT;
   v_payout_id UUID;
   v_period_start DATE;
+  v_earning_ids UUID[];
   v_acct_name TEXT;
   v_acct_no TEXT;
   v_bank TEXT;
@@ -38,12 +39,21 @@ BEGIN
     RAISE EXCEPTION 'bank details not configured';
   END IF;
 
-  SELECT COALESCE(SUM(net_amount_cents), 0), MIN(created_at)::DATE
-    INTO v_total, v_period_start
-    FROM pt_earnings
-   WHERE pt_id = v_pt_id
-     AND is_released = TRUE
-     AND payout_id IS NULL;
+  -- Capture the exact earning rows in the same statement that totals them.
+  -- A booking can be released concurrently; without capturing ids, the later
+  -- UPDATE could link an earning whose amount was not included in v_total.
+  SELECT COALESCE(SUM(net_amount_cents), 0),
+         MIN(created_at)::DATE,
+         COALESCE(array_agg(id), '{}'::UUID[])
+    INTO v_total, v_period_start, v_earning_ids
+    FROM (
+      SELECT id, net_amount_cents, created_at
+        FROM pt_earnings
+       WHERE pt_id = v_pt_id
+         AND is_released = TRUE
+         AND payout_id IS NULL
+       FOR UPDATE
+    ) eligible;
 
   IF v_total = 0 THEN
     RAISE EXCEPTION 'no available earnings';
@@ -68,9 +78,7 @@ BEGIN
 
   UPDATE pt_earnings
      SET payout_id = v_payout_id
-   WHERE pt_id = v_pt_id
-     AND is_released = TRUE
-     AND payout_id IS NULL;
+   WHERE id = ANY(v_earning_ids);
 
   RETURN v_payout_id;
 END;

@@ -35,7 +35,9 @@ class PTEarnings {
   ///
   /// `pt_earnings` has no status column: an earning is pending until
   /// `is_released` is true, available until it is linked to a payout, and
-  /// paid out once `payout_id` is set.
+  /// paid out once `payout_id` is set. Failed or cancelled payouts clear
+  /// `payout_id` through a database trigger, so the earning becomes available
+  /// again.
   EarningsStatus get status {
     if (!isReleased) return EarningsStatus.pending;
     return payoutId == null ? EarningsStatus.released : EarningsStatus.paidOut;

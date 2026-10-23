@@ -102,6 +102,8 @@ class PayoutRepository {
           .update(updateData)
           .eq('id', payoutId);
 
+      // The DB trigger releases linked pt_earnings when the new status is
+      // failed or cancelled, so those earnings become available again.
       return Result.success(null);
     } catch (e) {
       return Result.failure(

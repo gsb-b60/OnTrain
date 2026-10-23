@@ -86,11 +86,13 @@ class Payout {
 `request_payout()` is `SECURITY DEFINER` and performs one transaction:
 1. Reads the PT's bank details from `pt_profiles`.
 2. Locks the PT's payout requests (`pg_advisory_xact_lock`).
-3. Sums released, unlinked earnings.
+3. Captures the eligible earning ids with `FOR UPDATE` and sums them in the same statement.
 4. Enforces the minimum payout.
 5. Inserts `payouts` with `status='pending'`, `period_start`/`period_end`.
-6. Sets `pt_earnings.payout_id` for those earnings.
+6. Sets `pt_earnings.payout_id` only for the captured earning ids.
 7. Returns the new payout id.
+
+A second trigger, `trg_release_earnings_on_payout_failure`, clears `payout_id` when a payout becomes `failed` or `cancelled`, so those earnings return to the available balance.
 
 ### 4. Controller: `lib/controller/ptEarningsController.dart`
 - `fetchEarningsSummary()` → loads available + pending + paid-out + history.
@@ -117,7 +119,9 @@ class Payout {
 | `lib/repo/payoutRepository.dart` | Call RPC |
 | `lib/controller/ptEarningsController.dart` | Full-balance request |
 | `lib/feature/PTDisplay/pt_earnings_page.dart` | Confirmation dialog + status chips |
-| `docs/database/db-config.sql` | Add `request_payout()` RPC |
+| `docs/database/db-config.sql` | Add `request_payout()` RPC and payout-failure trigger |
+| `supabase/migrations/0013_request_payout.sql` | Atomic payout request RPC |
+| `supabase/migrations/0014_release_earnings_on_payout_failure.sql` | Release earnings on failed/cancelled payouts |
 
 ## Acceptance Tests
 

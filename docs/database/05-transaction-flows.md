@@ -367,8 +367,10 @@ final payouts = await supabase
 | `pending` | PT requested, awaiting admin | PT inserts |
 | `processing` | Admin reviewing/initiating transfer | Admin updates |
 | `completed` | Transfer successful | Admin updates |
-| `failed` | Transfer failed | Admin updates |
-| `cancelled` | PT cancelled request | PT/Admin updates |
+| `failed` | Transfer failed; linked earnings are released | Admin updates |
+| `cancelled` | PT/Admin cancelled; linked earnings are released | PT/Admin updates |
+
+When a payout becomes `failed` or `cancelled`, `trg_release_earnings_on_payout_failure` clears `payout_id` on its `pt_earnings` rows, returning them to the available balance.
 
 ### 4.2 PT Requests Payout
 
@@ -385,10 +387,10 @@ Server-side behavior (`docs/database/db-config.sql`):
 
 1. `auth.uid()` identifies the PT and `pg_advisory_xact_lock` serializes requests.
 2. Bank details are read from `pt_profiles` (snapshot at request time).
-3. `SUM(net_amount_cents)` over `is_released = TRUE AND payout_id IS NULL`.
+3. The eligible earning ids are captured with `FOR UPDATE` and summed in the same statement, so a concurrently released earning cannot be linked without being counted.
 4. Minimum is read from `platform_settings.payout_min_amount_cents`.
 5. `payouts` row is inserted with `status = 'pending'`, `period_start = MIN(created_at)`, `period_end = CURRENT_DATE`.
-6. Those earnings get `payout_id = <new payout>`.
+6. Only the captured earning ids get `payout_id = <new payout>`.
 
 Do **not** link earnings with a client-side `UPDATE`: `pt_earnings` is granted `SELECT` only.
 
