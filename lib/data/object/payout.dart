@@ -5,6 +5,8 @@ class Payout {
   final String ptId;
   final int amountCents;
   final PayoutStatus status;
+  final DateTime? periodStart;
+  final DateTime? periodEnd;
   final DateTime? requestedAt;
   final DateTime? processedAt;
   final String bankAccountName;
@@ -17,7 +19,9 @@ class Payout {
     this.id,
     required this.ptId,
     required this.amountCents,
-    this.status = PayoutStatus.requested,
+    this.status = PayoutStatus.pending,
+    this.periodStart,
+    this.periodEnd,
     this.requestedAt,
     this.processedAt,
     required this.bankAccountName,
@@ -32,7 +36,13 @@ class Payout {
       id: map['id'] as String?,
       ptId: map['pt_id'] as String,
       amountCents: map['amount_cents'] as int,
-      status: PayoutStatus.fromString(map['status'] as String? ?? 'requested'),
+      status: PayoutStatus.fromString(map['status'] as String? ?? 'pending'),
+      periodStart: map['period_start'] != null
+          ? DateTime.parse(map['period_start'] as String)
+          : null,
+      periodEnd: map['period_end'] != null
+          ? DateTime.parse(map['period_end'] as String)
+          : null,
       requestedAt: map['requested_at'] != null
           ? DateTime.parse(map['requested_at'] as String)
           : null,
@@ -53,6 +63,8 @@ class Payout {
       'pt_id': ptId,
       'amount_cents': amountCents,
       'status': status.dbValue,
+      'period_start': _formatDate(periodStart),
+      'period_end': _formatDate(periodEnd),
       'requested_at': requestedAt?.toIso8601String(),
       'processed_at': processedAt?.toIso8601String(),
       'bank_account_name': bankAccountName,
@@ -76,6 +88,8 @@ class Payout {
     String? ptId,
     int? amountCents,
     PayoutStatus? status,
+    DateTime? periodStart,
+    DateTime? periodEnd,
     DateTime? requestedAt,
     DateTime? processedAt,
     String? bankAccountName,
@@ -89,6 +103,8 @@ class Payout {
       ptId: ptId ?? this.ptId,
       amountCents: amountCents ?? this.amountCents,
       status: status ?? this.status,
+      periodStart: periodStart ?? this.periodStart,
+      periodEnd: periodEnd ?? this.periodEnd,
       requestedAt: requestedAt ?? this.requestedAt,
       processedAt: processedAt ?? this.processedAt,
       bankAccountName: bankAccountName ?? this.bankAccountName,
@@ -97,6 +113,11 @@ class Payout {
       bankBranch: bankBranch ?? this.bankBranch,
       failureReason: failureReason ?? this.failureReason,
     );
+  }
+
+  static String? _formatDate(DateTime? date) {
+    if (date == null) return null;
+    return date.toIso8601String().split('T').first;
   }
 
   @override

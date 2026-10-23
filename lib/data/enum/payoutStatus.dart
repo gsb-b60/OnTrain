@@ -1,8 +1,9 @@
 enum PayoutStatus {
-  requested('requested', 'Đã yêu cầu'),
+  pending('pending', 'Chờ xử lý'),
   processing('processing', 'Đang xử lý'),
   completed('completed', 'Hoàn tất'),
-  failed('failed', 'Thất bại');
+  failed('failed', 'Thất bại'),
+  cancelled('cancelled', 'Đã hủy');
 
   final String dbValue;
   final String displayName;
@@ -12,7 +13,7 @@ enum PayoutStatus {
   static PayoutStatus fromString(String value) {
     return PayoutStatus.values.firstWhere(
       (e) => e.dbValue == value.toLowerCase(),
-      orElse: () => PayoutStatus.requested,
+      orElse: () => PayoutStatus.pending,
     );
   }
 }
