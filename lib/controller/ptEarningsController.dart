@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:ontrain/controller/authControlller.dart';
 import 'package:ontrain/data/object/payout.dart';
 import 'package:ontrain/data/object/pt_earnings.dart';
-import 'package:ontrain/data/object/pt.dart';
 import 'package:ontrain/model/stateEnum.dart';
 import 'package:ontrain/repo/earningsRepository.dart';
 import 'package:ontrain/repo/payoutRepository.dart';
@@ -56,7 +55,9 @@ class PTEarningsController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final availableResult = await earningsRepository.fetchAvailableEarnings(ptId);
+      final availableResult = await earningsRepository.fetchAvailableEarnings(
+        ptId,
+      );
       final pendingResult = await earningsRepository.fetchPendingEarnings(ptId);
       final paidOutResult = await earningsRepository.fetchPaidOutEarnings(ptId);
       final historyResult = await earningsRepository.fetchEarningsHistory(ptId);
@@ -90,7 +91,7 @@ class PTEarningsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> requestPayout(int amountCents) async {
+  Future<bool> requestPayout() async {
     final ptId = authController.user?.id;
     if (ptId == null) {
       _error = 'PT not authenticated';
@@ -98,33 +99,9 @@ class PTEarningsController extends ChangeNotifier {
       return false;
     }
 
-    if (amountCents < _minPayoutAmount) {
-      _error = 'Minimum payout amount is ${(_minPayoutAmount / 100).toStringAsFixed(0)} VND';
-      notifyListeners();
-      return false;
-    }
-
-    if (amountCents > _availableBalance) {
-      _error = 'Cannot withdraw more than available balance';
-      notifyListeners();
-      return false;
-    }
-
-    final pt = authController.user as PT?; // We'll need to cast or get PT data
-    if (pt == null) {
-      _error = 'PT profile not found';
-      notifyListeners();
-      return false;
-    }
-
-    // Use bank details from PT profile
-    final bankName = pt.bankName ?? '';
-    final bankAccountNumber = pt.bankAccountNumber ?? '';
-    final bankAccountName = pt.bankAccountName ?? '';
-    final bankBranch = pt.bankBranch;
-
-    if (bankName.isEmpty || bankAccountNumber.isEmpty || bankAccountName.isEmpty) {
-      _error = 'Bank details not configured in profile';
+    if (_availableBalance < _minPayoutAmount) {
+      _error =
+          'Minimum payout amount is ${(_minPayoutAmount / 100).toStringAsFixed(0)} VND';
       notifyListeners();
       return false;
     }
@@ -133,27 +110,17 @@ class PTEarningsController extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    final result = await payoutRepository.requestPayout(
-      ptId: ptId,
-      amountCents: amountCents,
-      bankAccountName: bankAccountName,
-      bankAccountNumber: bankAccountNumber,
-      bankName: bankName,
-      bankBranch: bankBranch,
-    );
+    final result = await payoutRepository.requestPayout();
 
     if (result.isSuccess) {
-      _state = ViewState.success;
-      _availableBalance -= amountCents;
-      _paidOutBalance += amountCents;
-      await fetchEarningsSummary(); // Refresh history
-      notifyListeners();
+      // Re-read the ledger so the balances and histories reflect the payout.
+      await fetchEarningsSummary();
       return true;
-    } else {
-      _state = ViewState.error;
-      _error = result.error?.message ?? 'Failed to request payout';
-      notifyListeners();
-      return false;
     }
+
+    _state = ViewState.error;
+    _error = result.error?.message ?? 'Failed to request payout';
+    notifyListeners();
+    return false;
   }
 }
