@@ -59,11 +59,15 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
             child: CustomScrollView(
               slivers: [
                 SliverAppBar(
-                  expandedHeight: 220,
+                  expandedHeight: 300,
                   floating: false,
                   pinned: true,
                   backgroundColor: AppColors.aquaTeal,
                   flexibleSpace: FlexibleSpaceBar(
+                    titlePadding: const EdgeInsetsDirectional.only(
+                      start: 20,
+                      bottom: 16,
+                    ),
                     title: const Text(
                       'Earnings',
                       style: TextStyle(
@@ -75,10 +79,10 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
                       decoration: const BoxDecoration(
                         gradient: AppGradients.brand,
                       ),
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 56),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _BalanceCard(
                             label: 'Available Balance',
@@ -110,9 +114,13 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
                     ),
                   ),
                   actions: [
-                    if (controller.availableBalance >= controller.minPayoutAmount)
+                    if (controller.availableBalance >=
+                        controller.minPayoutAmount)
                       IconButton(
-                        icon: const Icon(Icons.account_balance_wallet, color: AppColors.light),
+                        icon: const Icon(
+                          Icons.account_balance_wallet,
+                          color: AppColors.light,
+                        ),
                         onPressed: () => _showPayoutDialog(context, controller),
                         tooltip: 'Request Payout',
                       ),
@@ -124,7 +132,8 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (controller.availableBalance < controller.minPayoutAmount)
+                        if (controller.availableBalance <
+                            controller.minPayoutAmount)
                           Container(
                             padding: const EdgeInsets.all(12),
                             margin: const EdgeInsets.only(bottom: 16),
@@ -135,13 +144,18 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.info_outline, color: Colors.orange),
+                                const Icon(
+                                  Icons.info_outline,
+                                  color: Colors.orange,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'Minimum payout: ${NumberFormat('#,###').format(controller.minPayoutAmount)} VND. '
                                     'Your available balance: ${NumberFormat('#,###').format(controller.availableBalance)} VND',
-                                    style: const TextStyle(color: Colors.orange),
+                                    style: const TextStyle(
+                                      color: Colors.orange,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -192,11 +206,10 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
     );
   }
 
-  void _showPayoutDialog(BuildContext context, PTEarningsController controller) {
-    final amountController = TextEditingController(
-      text: (controller.availableBalance / 100).toStringAsFixed(0),
-    );
-
+  void _showPayoutDialog(
+    BuildContext context,
+    PTEarningsController controller,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -214,14 +227,9 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
               style: TextStyle(color: AppColors.gray700),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: amountController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Amount (VND)',
-                hintText: 'Enter amount to withdraw',
-                border: OutlineInputBorder(),
-              ),
+            const Text(
+              'The full available balance will be requested and paid to the '
+              'bank account saved in your PT profile.',
             ),
             if (controller.error != null && controller.state == ViewState.error)
               Padding(
@@ -239,12 +247,9 @@ class _PTEarningsPageState extends State<PTEarningsPage> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
-              final amount = int.tryParse(amountController.text.replaceAll(',', '')) ?? 0;
-              if (amount > 0) {
-                Navigator.pop(context);
-                controller.requestPayout(amount * 100);
-              }
+            onPressed: () async {
+              Navigator.pop(context);
+              await controller.requestPayout();
             },
             child: const Text('Request'),
           ),
@@ -293,7 +298,7 @@ class _BalanceCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            NumberFormat('#,###').format(amount) + ' VND',
+            '${NumberFormat('#,###').format(amount)} VND',
             style: TextStyle(
               color: color,
               fontSize: AppSizes.semiLarge,
@@ -307,10 +312,7 @@ class _BalanceCard extends StatelessWidget {
 }
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({
-    required this.title,
-    required this.count,
-  });
+  const _SectionHeader({required this.title, required this.count});
 
   final String title;
   final int count;
@@ -431,9 +433,10 @@ class _EarningsStatusIcon extends StatelessWidget {
         color = Colors.green;
         icon = Icons.account_balance_wallet;
         break;
-      default:
+      case EarningsStatus.pending:
         color = Colors.orange;
         icon = Icons.hourglass_empty;
+        break;
     }
     return CircleAvatar(
       backgroundColor: color.withValues(alpha: 0.1),
@@ -460,9 +463,10 @@ class _EarningsStatusChip extends StatelessWidget {
         color = Colors.green;
         label = 'Paid Out';
         break;
-      default:
+      case EarningsStatus.pending:
         color = Colors.orange;
         label = 'Pending';
+        break;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -502,10 +506,7 @@ class _PayoutTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text(
-              payout.bankName,
-              style: const TextStyle(fontSize: 12),
-            ),
+            Text(payout.bankName, style: const TextStyle(fontSize: 12)),
             if (payout.requestedAt != null)
               Text(
                 'Requested: ${DateFormat('dd/MM/yyyy HH:mm').format(payout.requestedAt!)}',
@@ -539,21 +540,26 @@ class _PayoutStatusIcon extends StatelessWidget {
     Color color;
     IconData icon;
     switch (status) {
-      case PayoutStatus.completed:
-        color = Colors.green;
-        icon = Icons.check_circle;
+      case PayoutStatus.pending:
+        color = Colors.orange;
+        icon = Icons.hourglass_empty;
         break;
       case PayoutStatus.processing:
         color = Colors.blue;
         icon = Icons.sync;
         break;
+      case PayoutStatus.completed:
+        color = Colors.green;
+        icon = Icons.check_circle;
+        break;
       case PayoutStatus.failed:
         color = Colors.red;
         icon = Icons.error;
         break;
-      default:
-        color = Colors.orange;
-        icon = Icons.hourglass_empty;
+      case PayoutStatus.cancelled:
+        color = Colors.grey;
+        icon = Icons.cancel;
+        break;
     }
     return CircleAvatar(
       backgroundColor: color.withValues(alpha: 0.1),
@@ -572,21 +578,26 @@ class _PayoutStatusChip extends StatelessWidget {
     Color color;
     String label;
     switch (status) {
-      case PayoutStatus.completed:
-        color = Colors.green;
-        label = 'Completed';
+      case PayoutStatus.pending:
+        color = Colors.orange;
+        label = 'Pending';
         break;
       case PayoutStatus.processing:
         color = Colors.blue;
         label = 'Processing';
         break;
+      case PayoutStatus.completed:
+        color = Colors.green;
+        label = 'Completed';
+        break;
       case PayoutStatus.failed:
         color = Colors.red;
         label = 'Failed';
         break;
-      default:
-        color = Colors.orange;
-        label = 'Requested';
+      case PayoutStatus.cancelled:
+        color = Colors.grey;
+        label = 'Cancelled';
+        break;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

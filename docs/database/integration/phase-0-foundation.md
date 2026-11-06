@@ -6,6 +6,8 @@ Establish the complete DB schema (authored as SQL migrations), make all Supabase
 ## DB Objects (authored in `supabase/migrations/`)
 Create the following migrations in order. Use snake_case table/column names matching `docs/database/05-transaction-flows.md`.
 
+> `docs/live-schema.md` is the source of truth for the live database. If a phase spec disagrees with it, the live schema wins and the spec must be corrected.
+
 | Migration | Tables / Objects | Key Details |
 |---|---|---|
 | `0001_profiles.sql` | `profiles` (exists) | Keep; add `phone`, `avatar_url` optional. |
@@ -14,8 +16,8 @@ Create the following migrations in order. Use snake_case table/column names matc
 | `0004_time_slots.sql` | `time_slots` | `id`, `pt_id`, `service_package_id`, `start_at`, `end_at`, `timezone`, `is_available`, `is_booked`, `booking_id` (FK bookings). |
 | `0005_bookings.sql` | `bookings` | `id`, `client_id`, `pt_id`, `service_package_id`, `start_at`, `end_at`, `timezone`, `price_cents`, `currency`, `platform_commission_percent`, `platform_commission_fixed_cents`, `pt_earnings_cents`, `status`, `payment_status`, `cancelled_by`, `cancelled_at`, `cancellation_reason`, `cancellation_fee_cents`, `no_show_by`, `created_at`, `updated_at`. Status enum per §1.2. |
 | `0006_payments.sql` | `payments` | `id`, `booking_id`, `client_id`, `amount_cents`, `platform_commission_cents`, `pt_amount_cents`, `payment_method`, `status` (pending/held/released/refunded/failed/disputed), `external_payment_id`, `created_at`, `updated_at`. |
-| `0007_pt_earnings.sql` | `pt_earnings` | `id`, `pt_id`, `booking_id`, `amount_cents`, `status` (pending/released/paid_out), `created_at`, `released_at`, `paid_out_at`. |
-| `0008_payouts.sql` | `payouts` | `id`, `pt_id`, `amount_cents`, `status` (requested/processing/completed/failed), `requested_at`, `processed_at`, `bank_account_name`, `bank_account_number`, `bank_name`, `bank_branch`. |
+| `0007_pt_earnings.sql` | `pt_earnings` | `id`, `pt_id`, `booking_id`, `payment_id`, `gross_amount_cents`, `platform_commission_percent`, `platform_commission_fixed_cents`, `platform_commission_cents`, `net_amount_cents`, `is_released`, `released_at`, `payout_id`, `created_at`. |
+| `0008_payouts.sql` | `payouts` | `id`, `pt_id`, `amount_cents`, `currency`, `period_start`, `period_end`, `status` (`pending`/`processing`/`completed`/`failed`/`cancelled`), `requested_at`, `processed_at`, `completed_at`, `bank_account_name`, `bank_account_number`, `bank_name`, `bank_branch`, `failure_reason`. |
 | `0009_disputes.sql` | `disputes` | `id`, `booking_id`, `raised_by` (client/pt), `reason`, `status` (open/resolved_client/resolved_pt/resolved_split/refunded), `resolution`, `created_at`, `resolved_at`. |
 | `0010_notifications.sql` | `notifications` | `id`, `user_id`, `type`, `title`, `body`, `data` (jsonb), `is_read`, `created_at`. |
 | `0011_platform_settings.sql` | `platform_settings` | `key`, `value` (jsonb). Seed: `commission` {percent: 10, fixed_cents: 5000}, `cancellation_policy` {free_until_hours_before: 24, late_fee_percent: 50, no_show_fee_percent: 100}. |

@@ -57,7 +57,8 @@ Payment _testPayment({
 
 PTEarnings _testEarnings({
   String id = 'earnings-1',
-  EarningsStatus status = EarningsStatus.released,
+  bool isReleased = true,
+  String? payoutId,
   String bookingId = 'booking-1',
 }) {
   return PTEarnings(
@@ -70,14 +71,15 @@ PTEarnings _testEarnings({
     platformCommissionFixedCents: 0,
     platformCommissionCents: 15000,
     netAmountCents: 85000,
-    status: status,
+    isReleased: isReleased,
+    payoutId: payoutId,
     createdAt: DateTime.now(),
   );
 }
 
 Payout _testPayout({
   String id = 'payout-1',
-  PayoutStatus status = PayoutStatus.requested,
+  PayoutStatus status = PayoutStatus.pending,
 }) {
   return Payout(
     id: id,
@@ -122,10 +124,7 @@ Notification _testNotification({
   );
 }
 
-Review _testReview({
-  String id = 'review-1',
-  int rating = 5,
-}) {
+Review _testReview({String id = 'review-1', int rating = 5}) {
   return Review(
     id: id,
     bookingId: 'booking-1',
@@ -252,8 +251,14 @@ void main() {
     });
 
     test('fromString parses correctly', () {
-      expect(CancelReason.fromString('rescheduling'), CancelReason.rescheduling);
-      expect(CancelReason.fromString('unexpected_work'), CancelReason.unexpectedWork);
+      expect(
+        CancelReason.fromString('rescheduling'),
+        CancelReason.rescheduling,
+      );
+      expect(
+        CancelReason.fromString('unexpected_work'),
+        CancelReason.unexpectedWork,
+      );
       expect(CancelReason.fromString('weather'), CancelReason.weather);
       expect(CancelReason.fromString('others'), CancelReason.others);
       expect(CancelReason.fromString('unknown'), CancelReason.others);
@@ -276,9 +281,15 @@ void main() {
 
     test('fromString parses correctly', () {
       expect(DisputeStatus.fromString('open'), DisputeStatus.open);
-      expect(DisputeStatus.fromString('resolved_client'), DisputeStatus.resolvedClient);
+      expect(
+        DisputeStatus.fromString('resolved_client'),
+        DisputeStatus.resolvedClient,
+      );
       expect(DisputeStatus.fromString('resolved_pt'), DisputeStatus.resolvedPt);
-      expect(DisputeStatus.fromString('resolved_split'), DisputeStatus.resolvedSplit);
+      expect(
+        DisputeStatus.fromString('resolved_split'),
+        DisputeStatus.resolvedSplit,
+      );
       expect(DisputeStatus.fromString('refunded'), DisputeStatus.refunded);
       expect(DisputeStatus.fromString('unknown'), DisputeStatus.open);
     });
@@ -310,10 +321,14 @@ void main() {
         ),
       ];
 
-      final upcoming = mockBookings.where((b) =>
-          (b.status == BookingStatus.confirmed ||
-              b.status == BookingStatus.inProgress) &&
-          b.startAt.isAfter(now)).toList();
+      final upcoming = mockBookings
+          .where(
+            (b) =>
+                (b.status == BookingStatus.confirmed ||
+                    b.status == BookingStatus.inProgress) &&
+                b.startAt.isAfter(now),
+          )
+          .toList();
       expect(upcoming, hasLength(2));
       expect(upcoming.map((e) => e.id).toSet(), {'b1', 'b2'});
     });
@@ -332,68 +347,56 @@ void main() {
         ),
       ];
 
-      final completed = mockBookings.where((b) => b.status == BookingStatus.completed).toList();
+      final completed = mockBookings
+          .where((b) => b.status == BookingStatus.completed)
+          .toList();
       expect(completed, hasLength(1));
       expect(completed.first.id, 'b1');
     });
 
     test('cancelled filters cancelled bookings', () {
       final mockBookings = [
-        _testBooking(
-          id: 'b1',
-          status: BookingStatus.cancelledByClient,
-        ),
-        _testBooking(
-          id: 'b2',
-          status: BookingStatus.cancelledByPt,
-        ),
-        _testBooking(
-          id: 'b3',
-          status: BookingStatus.confirmed,
-        ),
+        _testBooking(id: 'b1', status: BookingStatus.cancelledByClient),
+        _testBooking(id: 'b2', status: BookingStatus.cancelledByPt),
+        _testBooking(id: 'b3', status: BookingStatus.confirmed),
       ];
 
       final cancelled = mockBookings
-          .where((b) => b.status == BookingStatus.cancelledByClient || b.status == BookingStatus.cancelledByPt)
+          .where(
+            (b) =>
+                b.status == BookingStatus.cancelledByClient ||
+                b.status == BookingStatus.cancelledByPt,
+          )
           .toList();
       expect(cancelled, hasLength(2));
     });
 
     test('noShow filters no-show bookings', () {
       final mockBookings = [
-        _testBooking(
-          id: 'b1',
-          status: BookingStatus.noShowClient,
-        ),
-        _testBooking(
-          id: 'b2',
-          status: BookingStatus.noShowPt,
-        ),
-        _testBooking(
-          id: 'b3',
-          status: BookingStatus.confirmed,
-        ),
+        _testBooking(id: 'b1', status: BookingStatus.noShowClient),
+        _testBooking(id: 'b2', status: BookingStatus.noShowPt),
+        _testBooking(id: 'b3', status: BookingStatus.confirmed),
       ];
 
       final noShow = mockBookings
-          .where((b) => b.status == BookingStatus.noShowClient || b.status == BookingStatus.noShowPt)
+          .where(
+            (b) =>
+                b.status == BookingStatus.noShowClient ||
+                b.status == BookingStatus.noShowPt,
+          )
           .toList();
       expect(noShow, hasLength(2));
     });
 
     test('disputed filters disputed bookings', () {
       final mockBookings = [
-        _testBooking(
-          id: 'b1',
-          status: BookingStatus.disputed,
-        ),
-        _testBooking(
-          id: 'b2',
-          status: BookingStatus.confirmed,
-        ),
+        _testBooking(id: 'b1', status: BookingStatus.disputed),
+        _testBooking(id: 'b2', status: BookingStatus.confirmed),
       ];
 
-      final disputed = mockBookings.where((b) => b.status == BookingStatus.disputed).toList();
+      final disputed = mockBookings
+          .where((b) => b.status == BookingStatus.disputed)
+          .toList();
       expect(disputed, hasLength(1));
     });
   });
@@ -404,7 +407,9 @@ void main() {
         final map = {
           'id': 'test',
           'start_at': DateTime.now().toIso8601String(),
-          'end_at': DateTime.now().add(const Duration(hours: 1)).toIso8601String(),
+          'end_at': DateTime.now()
+              .add(const Duration(hours: 1))
+              .toIso8601String(),
           'client_id': 'c1',
           'pt_id': 'p1',
           'price_cents': 100000,
@@ -506,24 +511,39 @@ void main() {
       expect(map['status'], 'held');
     });
 
-    test('PTEarnings.fromMap parses all status strings correctly', () {
-      for (final status in EarningsStatus.values) {
-        final map = {
-          'id': 'test',
-          'pt_id': 'pt-1',
-          'booking_id': 'booking-1',
-          'payment_id': 'payment-1',
-          'gross_amount_cents': 100000,
-          'platform_commission_percent': 15,
-          'platform_commission_fixed_cents': 0,
-          'platform_commission_cents': 15000,
-          'net_amount_cents': 85000,
-          'status': status.dbValue,
-          'created_at': DateTime.now().toIso8601String(),
-        };
-        final earning = PTEarnings.fromMap(map);
-        expect(earning.status, status);
-      }
+    test('PTEarnings derives status from is_released and payout_id', () {
+      final pending = PTEarnings.fromMap({
+        'id': 'pending',
+        'pt_id': 'pt-1',
+        'booking_id': 'booking-1',
+        'gross_amount_cents': 100000,
+        'net_amount_cents': 85000,
+        'is_released': false,
+        'payout_id': null,
+      });
+      expect(pending.status, EarningsStatus.pending);
+
+      final available = PTEarnings.fromMap({
+        'id': 'available',
+        'pt_id': 'pt-1',
+        'booking_id': 'booking-1',
+        'gross_amount_cents': 100000,
+        'net_amount_cents': 85000,
+        'is_released': true,
+        'payout_id': null,
+      });
+      expect(available.status, EarningsStatus.released);
+
+      final paidOut = PTEarnings.fromMap({
+        'id': 'paid-out',
+        'pt_id': 'pt-1',
+        'booking_id': 'booking-1',
+        'gross_amount_cents': 100000,
+        'net_amount_cents': 85000,
+        'is_released': true,
+        'payout_id': 'payout-1',
+      });
+      expect(paidOut.status, EarningsStatus.paidOut);
     });
 
     test('PTEarnings.fromMap parses correctly with all fields', () {
@@ -538,28 +558,32 @@ void main() {
         'platform_commission_fixed_cents': 0,
         'platform_commission_cents': 45000,
         'net_amount_cents': 255000,
-        'status': 'released',
+        'is_released': true,
+        'payout_id': 'payout-1',
         'created_at': now,
         'released_at': now,
-        'paid_out_at': now,
       };
       final earning = PTEarnings.fromMap(map);
       expect(earning.id, 'earnings-1');
       expect(earning.amountCents, 300000);
       expect(earning.platformCommissionCents, 45000);
       expect(earning.netAmountCents, 255000);
-      expect(earning.status, EarningsStatus.released);
+      expect(earning.isReleased, isTrue);
+      expect(earning.payoutId, 'payout-1');
+      expect(earning.status, EarningsStatus.paidOut);
     });
 
-    test('PTEarnings.toInsertMap excludes id and timestamps', () {
-      final earning = _testEarnings();
+    test('PTEarnings.toInsertMap uses live schema columns', () {
+      final earning = _testEarnings(payoutId: 'payout-1');
       final map = earning.toInsertMap();
       expect(map.containsKey('id'), isFalse);
       expect(map.containsKey('created_at'), isFalse);
       expect(map.containsKey('released_at'), isFalse);
+      expect(map.containsKey('status'), isFalse);
       expect(map.containsKey('paid_out_at'), isFalse);
       expect(map['pt_id'], 'pt-1');
-      expect(map['status'], 'released');
+      expect(map['is_released'], isTrue);
+      expect(map['payout_id'], 'payout-1');
     });
 
     test('Payout.fromMap parses all status strings correctly', () {
@@ -587,6 +611,8 @@ void main() {
         'pt_id': 'pt-1',
         'amount_cents': 100000,
         'status': 'completed',
+        'period_start': '2026-10-01',
+        'period_end': '2026-10-23',
         'bank_account_name': 'Test PT',
         'bank_account_number': '123456789',
         'bank_name': 'Test Bank',
@@ -599,6 +625,8 @@ void main() {
       expect(payout.id, 'payout-1');
       expect(payout.amountCents, 100000);
       expect(payout.status, PayoutStatus.completed);
+      expect(payout.periodStart, DateTime.parse('2026-10-01'));
+      expect(payout.periodEnd, DateTime.parse('2026-10-23'));
       expect(payout.bankAccountName, 'Test PT');
       expect(payout.bankAccountNumber, '123456789');
       expect(payout.bankName, 'Test Bank');
@@ -611,7 +639,7 @@ void main() {
       expect(map.containsKey('requested_at'), isFalse);
       expect(map.containsKey('processed_at'), isFalse);
       expect(map['pt_id'], 'pt-1');
-      expect(map['status'], 'requested');
+      expect(map['status'], 'pending');
     });
 
     test('Dispute.fromMap parses all status strings correctly', () {

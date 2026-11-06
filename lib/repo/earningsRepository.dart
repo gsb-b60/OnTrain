@@ -7,7 +7,7 @@ class EarningsRepository {
   final SupabaseClient _supabaseClient;
 
   EarningsRepository({SupabaseClient? supabaseClient})
-      : _supabaseClient = supabaseClient ?? Supabase.instance.client;
+    : _supabaseClient = supabaseClient ?? Supabase.instance.client;
 
   Future<Result<List<PTEarnings>>> fetchEarningsByPT(String ptId) async {
     try {
@@ -33,7 +33,8 @@ class EarningsRepository {
           .from('pt_earnings')
           .select('net_amount_cents')
           .eq('pt_id', ptId)
-          .eq('status', 'released');
+          .eq('is_released', true)
+          .isFilter('payout_id', null);
 
       final sum = response.fold<int>(
         0,
@@ -58,7 +59,7 @@ class EarningsRepository {
           .from('pt_earnings')
           .select('net_amount_cents')
           .eq('pt_id', ptId)
-          .eq('status', 'pending');
+          .eq('is_released', false);
 
       final sum = response.fold<int>(
         0,
@@ -79,7 +80,8 @@ class EarningsRepository {
           .from('pt_earnings')
           .select('net_amount_cents')
           .eq('pt_id', ptId)
-          .eq('status', 'paid_out');
+          .eq('is_released', true)
+          .not('payout_id', 'is', null);
 
       final sum = response.fold<int>(
         0,

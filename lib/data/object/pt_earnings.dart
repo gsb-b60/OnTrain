@@ -10,10 +10,10 @@ class PTEarnings {
   final int platformCommissionFixedCents;
   final int platformCommissionCents;
   final int netAmountCents;
-  final EarningsStatus status;
+  final bool isReleased;
+  final String? payoutId;
   final DateTime? createdAt;
   final DateTime? releasedAt;
-  final DateTime? paidOutAt;
 
   PTEarnings({
     this.id,
@@ -25,11 +25,23 @@ class PTEarnings {
     required this.platformCommissionFixedCents,
     required this.platformCommissionCents,
     required this.netAmountCents,
-    this.status = EarningsStatus.pending,
+    this.isReleased = false,
+    this.payoutId,
     this.createdAt,
     this.releasedAt,
-    this.paidOutAt,
   });
+
+  /// UI-only status derived from the live schema columns.
+  ///
+  /// `pt_earnings` has no status column: an earning is pending until
+  /// `is_released` is true, available until it is linked to a payout, and
+  /// paid out once `payout_id` is set. Failed or cancelled payouts clear
+  /// `payout_id` through a database trigger, so the earning becomes available
+  /// again.
+  EarningsStatus get status {
+    if (!isReleased) return EarningsStatus.pending;
+    return payoutId == null ? EarningsStatus.released : EarningsStatus.paidOut;
+  }
 
   factory PTEarnings.fromMap(Map<String, dynamic> map) {
     return PTEarnings(
@@ -37,23 +49,20 @@ class PTEarnings {
       ptId: map['pt_id'] as String,
       bookingId: map['booking_id'] as String,
       paymentId: map['payment_id'] as String?,
-      amountCents: map['gross_amount_cents'] as int,
+      amountCents: map['gross_amount_cents'] as int? ?? 0,
       platformCommissionPercent:
           (map['platform_commission_percent'] as num?)?.toInt() ?? 0,
       platformCommissionFixedCents:
           map['platform_commission_fixed_cents'] as int? ?? 0,
-      platformCommissionCents:
-          map['platform_commission_cents'] as int? ?? 0,
+      platformCommissionCents: map['platform_commission_cents'] as int? ?? 0,
       netAmountCents: map['net_amount_cents'] as int? ?? 0,
-      status: EarningsStatus.fromString(map['status'] as String? ?? 'pending'),
+      isReleased: map['is_released'] as bool? ?? false,
+      payoutId: map['payout_id'] as String?,
       createdAt: map['created_at'] != null
           ? DateTime.parse(map['created_at'] as String)
           : null,
       releasedAt: map['released_at'] != null
           ? DateTime.parse(map['released_at'] as String)
-          : null,
-      paidOutAt: map['paid_out_at'] != null
-          ? DateTime.parse(map['paid_out_at'] as String)
           : null,
     );
   }
@@ -69,10 +78,10 @@ class PTEarnings {
       'platform_commission_fixed_cents': platformCommissionFixedCents,
       'platform_commission_cents': platformCommissionCents,
       'net_amount_cents': netAmountCents,
-      'status': status.dbValue,
+      'is_released': isReleased,
+      'payout_id': payoutId,
       'created_at': createdAt?.toIso8601String(),
       'released_at': releasedAt?.toIso8601String(),
-      'paid_out_at': paidOutAt?.toIso8601String(),
     };
   }
 
@@ -81,7 +90,6 @@ class PTEarnings {
     map.remove('id');
     map.remove('created_at');
     map.remove('released_at');
-    map.remove('paid_out_at');
     return map;
   }
 
@@ -95,10 +103,10 @@ class PTEarnings {
     int? platformCommissionFixedCents,
     int? platformCommissionCents,
     int? netAmountCents,
-    EarningsStatus? status,
+    bool? isReleased,
+    String? payoutId,
     DateTime? createdAt,
     DateTime? releasedAt,
-    DateTime? paidOutAt,
   }) {
     return PTEarnings(
       id: id ?? this.id,
@@ -113,10 +121,10 @@ class PTEarnings {
       platformCommissionCents:
           platformCommissionCents ?? this.platformCommissionCents,
       netAmountCents: netAmountCents ?? this.netAmountCents,
-      status: status ?? this.status,
+      isReleased: isReleased ?? this.isReleased,
+      payoutId: payoutId ?? this.payoutId,
       createdAt: createdAt ?? this.createdAt,
       releasedAt: releasedAt ?? this.releasedAt,
-      paidOutAt: paidOutAt ?? this.paidOutAt,
     );
   }
 

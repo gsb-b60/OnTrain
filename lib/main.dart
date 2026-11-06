@@ -11,6 +11,7 @@ import 'package:ontrain/controller/ptEarningsController.dart';
 import 'package:ontrain/controller/reviewController.dart';
 import 'package:ontrain/core/constrants/app_colors.dart';
 import 'package:ontrain/data/object/pt.dart';
+import 'package:ontrain/feature/PTDisplay/pt_earnings_page.dart';
 import 'package:ontrain/feature/auth/authGate.dart';
 import 'package:ontrain/feature/book/bookingScreen.dart';
 import 'package:ontrain/feature/auth/welcomeScreeen.dart';
@@ -38,21 +39,43 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         // repositories
-        Provider<Authrepo>(create: (_) => Authrepo(supabaseClient: Supabase.instance.client)),
+        Provider<Authrepo>(
+          create: (_) => Authrepo(supabaseClient: Supabase.instance.client),
+        ),
 
-        Provider<Ptrepository>(create: (_) => Ptrepository(supabaseClient: Supabase.instance.client)),
+        Provider<Ptrepository>(
+          create: (_) => Ptrepository(supabaseClient: Supabase.instance.client),
+        ),
 
-        Provider<BookingRepository>(create: (_) => BookingRepository(supabaseClient: Supabase.instance.client)),
+        Provider<BookingRepository>(
+          create: (_) =>
+              BookingRepository(supabaseClient: Supabase.instance.client),
+        ),
 
-        Provider<PaymentRepository>(create: (_) => PaymentRepository(supabaseClient: Supabase.instance.client)),
+        Provider<PaymentRepository>(
+          create: (_) =>
+              PaymentRepository(supabaseClient: Supabase.instance.client),
+        ),
 
-        Provider<EarningsRepository>(create: (_) => EarningsRepository(supabaseClient: Supabase.instance.client)),
+        Provider<EarningsRepository>(
+          create: (_) =>
+              EarningsRepository(supabaseClient: Supabase.instance.client),
+        ),
 
-        Provider<PayoutRepository>(create: (_) => PayoutRepository(supabaseClient: Supabase.instance.client)),
+        Provider<PayoutRepository>(
+          create: (_) =>
+              PayoutRepository(supabaseClient: Supabase.instance.client),
+        ),
 
-        Provider<NotificationRepository>(create: (_) => NotificationRepository(supabaseClient: Supabase.instance.client)),
+        Provider<NotificationRepository>(
+          create: (_) =>
+              NotificationRepository(supabaseClient: Supabase.instance.client),
+        ),
 
-        Provider<ReviewRepository>(create: (_) => ReviewRepository(supabaseClient: Supabase.instance.client)),
+        Provider<ReviewRepository>(
+          create: (_) =>
+              ReviewRepository(supabaseClient: Supabase.instance.client),
+        ),
 
         // base controllers
         ChangeNotifierProvider<AuthController>(
@@ -152,6 +175,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: AuthGateWay(),
+      routes: {'/earnings': (context) => const PTEarningsPage()},
     );
   }
 }
